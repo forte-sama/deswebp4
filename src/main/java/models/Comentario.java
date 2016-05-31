@@ -6,10 +6,10 @@ package models;
 public class Comentario {
     private long id;
     private String comentario;
-    private long autorId;
+    private String autorId;
     private long articuloId;
 
-    public Comentario(long id, String comentario, long autorId, long articuloId) {
+    public Comentario(long id, String comentario, String autorId, long articuloId) {
         this.id = id;
         this.comentario = comentario;
         this.autorId = autorId;
@@ -32,11 +32,11 @@ public class Comentario {
         this.comentario = comentario;
     }
 
-    public long getAutorId() {
+    public String getAutorId() {
         return autorId;
     }
 
-    public void setAutorId(long autorId) {
+    public void setAutorId(String autorId) {
         this.autorId = autorId;
     }
 

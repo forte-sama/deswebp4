@@ -1,0 +1,89 @@
+
+-------------------------------
+		DISENO DE CLASES
+-------------------------------
+
+-usuario
+	username		string
+	password		string
+	nombre			string
+	administrador	boolean
+	autor			boolean
+	
+-etiqueta
+	id				long
+	etiqueta		string
+
+-articulo
+	id				long
+	titulo			string
+	cuerpo			string
+	autor			usuario
+	fecha			date
+	comentarios		list<comentario>
+	etiquetas		list<etiqueta>
+
+-comentario
+	id				long
+	comentario		string
+	autor			usuario
+	articulo		articulo
+
+-------------------------------
+		DISENO DE TABLAS
+-------------------------------
+
+-usuario
+	username		varchar(50)
+	password		varchar(50)
+	nombre			varchar(50)
+	administrador	boolean
+	autor			boolean
+
+-articulo
+	id				bigint
+	titulo			varchar(500)
+	cuerpo			varchar(10000)
+	autor			varchar(50)			usuario.username
+	fecha			date
+
+-comentario
+	id				bigint
+	comentario		varchar(2000)
+	autor			varchar(50)			usuario.username
+	articulo		bigint				articulo.id
+
+-articulo-etiqueta
+	id_articulo		bigint				articulo.id
+	id_etiqueta		bigint				etiqueta.id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

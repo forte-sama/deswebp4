@@ -13,7 +13,11 @@
 </body>
 <div class="container">
     <div class="row">
-        <#-- crear columnas como se necesite -->
+        <div class="col col-md-12">
+            <div class="well well-lg">
+            <#-- crear columnas como se necesite -->
+            </div>
+        </div>
     </div>
 </div>
 </html>

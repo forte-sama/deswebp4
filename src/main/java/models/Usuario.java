@@ -7,15 +7,15 @@ public class Usuario {
     private String username;
     private String password;
     private String nombre;
-    private boolean esAdministrador;
-    private boolean esAutor;
+    private boolean administrador;
+    private boolean autor;
 
-    public Usuario(String username, String password, String nombre, boolean esAdministrador, boolean esAutor) {
+    public Usuario(String username, String password, String nombre, boolean administrador, boolean autor) {
         this.setUsername(username);
         this.setPassword(password);
         this.setNombre(nombre);
-        this.setEsAdministrador(esAdministrador);
-        this.setEsAutor(esAutor);
+        this.setAdministrador(administrador);
+        this.setAutor(this.isAdministrador() || autor);
     }
 
     public String getUsername() {
@@ -42,19 +42,19 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    public boolean isEsAdministrador() {
-        return esAdministrador;
+    public boolean isAdministrador() {
+        return administrador;
     }
 
-    public void setEsAdministrador(boolean esAdministrador) {
-        this.esAdministrador = esAdministrador;
+    public void setAdministrador(boolean administrador) {
+        this.administrador = administrador;
     }
 
-    public boolean isEsAutor() {
-        return esAutor;
+    public boolean isAutor() {
+        return autor;
     }
 
-    public void setEsAutor(boolean esAutor) {
-        this.esAutor = esAutor;
+    public void setAutor(boolean esAutor) {
+        this.autor = esAutor;
     }
 }
