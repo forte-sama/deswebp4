@@ -46,16 +46,13 @@ public class GestorComentarios extends EntityManagerCRUD<Comentario> {
     public List<Comentario> findByArticle(Articulo article) {
         List<Comentario> resp = new ArrayList<>();
 
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         //do the thing
 
         try {
             //do the exact thing
-//            String sql = "select c from Comentario c where c.articulo = ?";
-//            resp = em.createQuery(sql, Comentario.class)
-//                     .getResultList();
             TypedQuery<Comentario> query = em.createQuery(
                     "SELECT c FROM Comentario c WHERE c.articulo = :articulo", Comentario.class);
 

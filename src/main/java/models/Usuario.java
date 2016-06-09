@@ -1,5 +1,6 @@
 package models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -10,8 +11,11 @@ import java.io.Serializable;
 @Entity
 public class Usuario implements Serializable {
     @Id
+    @Column(length = 50)
     private String username;
+    @Column(length = 50)
     private String password;
+    @Column(length = 50)
     private String nombre;
     private Boolean administrador;
     private Boolean autor;

@@ -71,15 +71,13 @@
                                     <div class="panel-body">
                                     ${comentario.getComentario()}
                                     </div>
-                                    <#if currentUser??>
-                                        <#if currentUser == articulo.getAutor().getUsername() || isAdmin??>
-                                            <div class="panel-footer">
-                                                <a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                    Borrar
-                                                </a>
-                                            </div>
-                                        </#if>
+                                    <#if currentUser?? && currentUser == articulo.getAutor().getUsername() || isAdmin??>
+                                        <div class="panel-footer">
+                                            <a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                Borrar
+                                            </a>
+                                        </div>
                                     </#if>
                                 </div>
                                 </#list>

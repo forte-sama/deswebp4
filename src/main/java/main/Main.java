@@ -221,7 +221,7 @@ public class Main {
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
 
             //Crear articulo en el gestor
             Articulo nuevo = new Articulo();
@@ -268,7 +268,7 @@ public class Main {
                 data.put("id",articulo.getId());
                 data.put("cuerpo",articulo.getCuerpo());
                 data.put("titulo",articulo.getTitulo());
-                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(articulo.getId()));
+//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(articulo.getId()));
             }
             else {
                 response.redirect("/");
@@ -293,7 +293,7 @@ public class Main {
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
 
             try {
                 long_id = Long.parseLong(raw_id.trim());
@@ -316,7 +316,7 @@ public class Main {
                 data.put("id",long_id);
                 data.put("titulo",titulo);
                 data.put("cuerpo",cuerpo);
-                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(long_id));
+//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(long_id));
 
                 data.put("msg_type","error");
                 data.put("msg","Hubo un error con el formulario.");
@@ -421,24 +421,10 @@ public class Main {
         get("/comment/delete/:article_id/:comment_id", (request, response) -> {
             String articulo_id   = request.params("article_id");
 
-            boolean exito = false;
-
-            try {
-                long long_articulo   = Long.parseLong(articulo_id);
-
-                Articulo articulo = GestorArticulos.getInstance().find(long_articulo);
-
-                exito = articulo.getAutor().getUsername() == Sesion.getUsuarioActivo(request);
-
-            } catch (NumberFormatException e) {
-                //TODO CAMBIAR MENSAJE DE EXCEPCION
-                exito = false;
-                e.printStackTrace();
-            }
-
             boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            boolean esAutor = Sesion.getTipoUsuarioActivo(request) == "administrador";
 
-            if(exito || esAdministrador) {
+            if(esAutor || esAdministrador) {
                 String comentario_id = request.params("comment_id");
 
                 try {

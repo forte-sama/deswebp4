@@ -16,7 +16,9 @@ public class Articulo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 500)
     private String titulo;
+    @Column(length = 10000)
     private String cuerpo;
     @OneToOne(fetch = FetchType.EAGER)
     private Usuario autor;

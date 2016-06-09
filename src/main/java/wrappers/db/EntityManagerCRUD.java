@@ -16,7 +16,7 @@ public class EntityManagerCRUD<T> {
 
     public EntityManagerCRUD(Class<T> Clase) {
         if(factory == null) {
-            factory = Persistence.createEntityManagerFactory("MiUnidadPersistencia");
+            factory = Persistence.createEntityManagerFactory("persistence_unit");
         }
 
         this.entidad = Clase;
@@ -29,7 +29,7 @@ public class EntityManagerCRUD<T> {
     public boolean crear(T entidad) {
         boolean success = false;
 
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         try {
@@ -51,7 +51,7 @@ public class EntityManagerCRUD<T> {
     public boolean editar(T entidad) {
         boolean success = false;
 
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         try {
@@ -72,13 +72,15 @@ public class EntityManagerCRUD<T> {
     public boolean eliminar(T entidad) {
         boolean success = false;
 
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         try {
             //TODO borrar cada comentario antes de borrar articulo
             em.remove(em.contains(entidad) ? entidad : em.merge(entidad));
             em.getTransaction().commit();
+
+            entidad = null;
 
             success = true;
         } catch (Exception ex) {
@@ -92,7 +94,7 @@ public class EntityManagerCRUD<T> {
     }
 
     public T find(Object id) {
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
 
         T result = null;
 
@@ -108,7 +110,7 @@ public class EntityManagerCRUD<T> {
     }
 
     public List<T> findAll(){
-        javax.persistence.EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
 
         try{
             CriteriaQuery<T> criteriaQuery = em.getCriteriaBuilder().createQuery(entidad);

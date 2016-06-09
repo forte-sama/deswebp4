@@ -12,6 +12,7 @@ public class Comentario {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 2000)
     private String comentario;
     @OneToOne(fetch = FetchType.EAGER)
     private Usuario autor;
