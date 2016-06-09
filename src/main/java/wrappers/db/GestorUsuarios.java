@@ -70,7 +70,7 @@ public class GestorUsuarios extends EntityManagerCRUD<Usuario> {
     private boolean validarDatos(Usuario target, boolean estaCreando) {
         boolean validUsername = stringValido(target.getUsername(), 50);
         boolean validPassword = stringValido(target.getPassword(), 50);
-        boolean validNombre   = stringValido(target.getNombre(),50);
+        boolean validNombre   = stringValido(target.getNombre(), 50);
 
         if(estaCreando) {
             validUsername = validUsername && esUsernameNuevo(target.getUsername());
@@ -90,11 +90,9 @@ public class GestorUsuarios extends EntityManagerCRUD<Usuario> {
 
     public boolean credencialesValidas(String username, String password) {
         boolean exito = true;
-        Connection con = null;
 
         try {
-            con = DB.getConnection();
-            Usuario userTarget = getUsuario(username);
+            Usuario userTarget = find(username);
 
             //si no encontro usuario con username, falla
             if(userTarget != null) {
@@ -106,7 +104,7 @@ public class GestorUsuarios extends EntityManagerCRUD<Usuario> {
             else {
                 exito = false;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
             e.printStackTrace();
             //si ocurrio algun fallo en la bd, falla

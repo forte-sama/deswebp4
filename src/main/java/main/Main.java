@@ -34,9 +34,6 @@ public class Main {
         //aplicar filtros
         Filtros.iniciarFiltros();
 
-        //crear admin por default
-//        GestorUsuarios.getInstance().crearAdminDefault();
-
 //        //prueba orm usuarios
 //        Usuario us = new Usuario();
 //        us.setUsername("xxy");
@@ -44,11 +41,11 @@ public class Main {
 //        us.setNombre("PRUEBIN");
 //        us.setAdministrador(false);
 //        us.setAutor(true);
-//        GestorUsuarios.getInstance().crear(us);
+//        GestorUsuarios.getInstance().editar(us);
 
 //        //prueba orm articulos
 //        Articulo ar = new Articulo();
-//        ar.setTitulo("Prueba ORM");
+//        ar.setTitulo("si si si ahora prueba ORM si si si");
 //        ar.setCuerpo("Aqui tamo en prueba.");
 //        ar.setAutor(us);
 //        ar.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
@@ -75,23 +72,23 @@ public class Main {
 
         System.out.println();
         //Rutas
-//        get("/", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","index");
-//            data.put("loggedIn",Sesion.isLoggedIn(request));
-//            data.put("articulos", _GestorArticulos.getArticulos());
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            return new ModelAndView(data,"index.ftl");
-//        }, new FreeMarkerEngine(configuration));
+        get("/", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","index");
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("articulos", GestorArticulos.getInstance().findAll());
+
+            return new ModelAndView(data,"index.ftl");
+        }, new FreeMarkerEngine(configuration));
 
         get("/admin/user/list", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","list_users");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //obtener los usuarios
             data.put("usuarios", GestorUsuarios.getInstance().findAll());
@@ -119,9 +116,9 @@ public class Main {
         get("/admin/user/edit/:username", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.params("username");
             Usuario target = GestorUsuarios.getInstance().find(username);
@@ -154,9 +151,9 @@ public class Main {
         post("/admin/user/edit", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","edit_user");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.queryParams("username");
             Usuario target = GestorUsuarios.getInstance().find(username.trim());
@@ -203,47 +200,52 @@ public class Main {
         }, new FreeMarkerEngine(configuration));
 
 
-//        get("/article/new", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","new_article");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            return new ModelAndView(data,"create_edit_article.ftl");
-//        }, new FreeMarkerEngine(configuration));
+        get("/article/new", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","new_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
-//        post("/article/new", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","new_article");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            String titulo = request.queryParams("titulo");
-//            String cuerpo = request.queryParams("cuerpo");
-//            String raw_etiquetas = request.queryParams("etiquetas");
-//
-//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-//
-//            //Crear articulo en el gestor
-//            boolean exito = _GestorArticulos.newArticulo(Sesion.getUsuarioActivo(request),titulo,cuerpo,etiquetas);
-//
-//            if(exito) {
-//                //redireccionar a vista con mis articulos
-//                response.redirect("/");
-//            }
-//            else {
-//                data.put("titulo",titulo);
-//                data.put("cuerpo",cuerpo);
-//                data.put("etiquetas",raw_etiquetas);
-//
-//                data.put("msg_type","error");
-//                data.put("msg","Hubo un error en el formulario");
-//            }
-//
-//            return new ModelAndView(data,"create_edit_article.ftl");
-//        }, new FreeMarkerEngine(configuration));
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/article/new", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","new_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            String titulo = request.queryParams("titulo");
+            String cuerpo = request.queryParams("cuerpo");
+            String raw_etiquetas = request.queryParams("etiquetas");
+
+            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+
+            //Crear articulo en el gestor
+            Articulo nuevo = new Articulo();
+            nuevo.setTitulo(titulo);
+            nuevo.setCuerpo(cuerpo);
+            nuevo.setAutor(GestorUsuarios.getInstance().find(Sesion.getUsuarioActivo(request)));
+            nuevo.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+            boolean exito = GestorArticulos.getInstance().crear(nuevo);
+
+            if(exito) {
+                //redireccionar a vista con mis articulos
+                response.redirect("/");
+            }
+            else {
+                data.put("titulo",titulo);
+                data.put("cuerpo",cuerpo);
+                data.put("etiquetas",raw_etiquetas);
+
+                data.put("msg_type","error");
+                data.put("msg","Hubo un error en el formulario");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
 
 //        get("/article/edit/:articulo_id", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
@@ -339,41 +341,41 @@ public class Main {
 //            return "";
 //        });
 
-//        get("/article/view/:article_id", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","view_article");
-//            data.put("loggedIn",Sesion.isLoggedIn(request));
-//            data.put("currentUser",Sesion.getUsuarioActivo(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//            if(esAdmin) {
-//                data.put("isAdmin","si");
-//            }
-//
-//            String raw_article_id = request.params("article_id");
-//            boolean exito = false;
-//
-//            try {
-//                long long_id = Long.parseLong(raw_article_id);
-//
-//                Articulo articulo = _GestorArticulos.getArticulo(long_id);
-//
-//                if(articulo != null) {
-//                    data.put("articulo", articulo);
+        get("/article/view/:article_id", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","view_article");
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            data.put("currentUser",Sesion.getUsuarioActivo(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            if(esAdmin) {
+                data.put("isAdmin","si");
+            }
+
+            String raw_article_id = request.params("article_id");
+            boolean exito = false;
+
+            try {
+                long long_id = Long.parseLong(raw_article_id);
+
+                Articulo articulo = GestorArticulos.getInstance().find(long_id);
+
+                if(articulo != null) {
+                    data.put("articulo", articulo);
 //                    data.put("comentarios", _GestorComentarios.getComentarios(articulo.getId()));
-//                    exito = true;
-//                }
-//            } catch (NumberFormatException e) {
-//                //TODO CAMBIAR MENSAJE DE EXCEPCION
-//                e.printStackTrace();
-//            }
-//
-//            if(!exito) {
-//                response.redirect("/");
-//            }
-//
-//            return new ModelAndView(data,"view_article.ftl");
-//        }, new FreeMarkerEngine(configuration));
+                    exito = true;
+                }
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            }
+
+            if(!exito) {
+                response.redirect("/");
+            }
+
+            return new ModelAndView(data,"view_article.ftl");
+        }, new FreeMarkerEngine(configuration));
 
 
 //        post("/comment/new", (request, response) -> {
@@ -444,62 +446,62 @@ public class Main {
 //        });
 
 
-//        get("/login", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","login");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            return new ModelAndView(data,"login.ftl");
-//        }, new FreeMarkerEngine(configuration));
+        get("/logout",(request, response) -> {
+            Sesion.cerrar(request);
 
-//        get("/logout",(request, response) -> {
-//            Sesion.cerrar(request);
-//
-//            response.redirect("/");
-//
-//            return "";
-//        });
+            response.redirect("/");
 
-//        post("/login", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","login");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            if(!request.queryParams("submit").isEmpty()) {
-//                //obtener datos de quien desea iniciar sesion
-//                String username = request.queryParams("username");
-//                String password = request.queryParams("password");
-//
-//                if(_GestorUsuarios.credencialesValidas(username,password)) {
-//                    Usuario user = _GestorUsuarios.getUsuario(username);
-//                    //iniciar sesion
-//                    Sesion.iniciar(request,user);
-//
-//                    //redireccionar con estado de exito
-//                    response.redirect("/");
-//                }
-//                else {
-//                    //setear datos para llenar formulario
-//                    data.put("username",username);
-//
-//                    data.put("msg_type","error");
-//                    data.put("msg","No se pudo iniciar sesion. Username/password no coinciden.");
-//                }
-//            }
-//
-//            return new ModelAndView(data,"login.ftl");
-//        }, new FreeMarkerEngine(configuration));
+            return "";
+        });
+
+        get("/login", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","login");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            return new ModelAndView(data,"login.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/login", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","login");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            if(!request.queryParams("submit").isEmpty()) {
+                //obtener datos de quien desea iniciar sesion
+                String username = request.queryParams("username");
+                String password = request.queryParams("password");
+
+                if(GestorUsuarios.getInstance().credencialesValidas(username,password)) {
+                    Usuario user = GestorUsuarios.getInstance().find(username);
+                    //iniciar sesion
+                    Sesion.iniciar(request,user);
+
+                    //redireccionar con estado de exito
+                    response.redirect("/");
+                }
+                else {
+                    //setear datos para llenar formulario
+                    data.put("username",username);
+
+                    data.put("msg_type","error");
+                    data.put("msg","No se pudo iniciar sesion. Username/password no coinciden.");
+                }
+            }
+
+            return new ModelAndView(data,"login.ftl");
+        }, new FreeMarkerEngine(configuration));
 
         get("/user/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             return new ModelAndView(data,"register_edit_user.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -507,9 +509,9 @@ public class Main {
         post("/user/register", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","register");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //si el request llego desde el formulario
             if(!request.queryParams("submit").isEmpty()) {

@@ -19,9 +19,9 @@
                     <div class="panel-heading">
                         <h1>${articulo.getTitulo()}</h1>
                         <hr />
-                        <h4>Escrita por: <strong>${articulo.getAutorId()}</strong></h4>
+                        <h4>Escrita por: <strong>${articulo.getAutor().getUsername()}</strong></h4>
                         <#if currentUser??>
-                            <#if currentUser == articulo.getAutorId()>
+                            <#if currentUser == articulo.getAutor().getUsername()>
                             <a href="/article/edit/${articulo.getId()}">
                                 <span class="glyphicon glyphicon-pencil"></span> Editar
                             </a>
@@ -34,9 +34,9 @@
                             ${articulo.getCuerpo()}
                             </div>
                             <div class="col col-md-4">
-                                <#list articulo.etiquetas() as etiqueta>
-                                <span class="label label-danger">${etiqueta}</span>
-                                </#list>
+                                <#--<#list articulo.etiquetas() as etiqueta>-->
+                                <#--<span class="label label-danger">${etiqueta}</span>-->
+                                <#--</#list>-->
                                 <hr />
                                 <#if loggedIn?? && loggedIn == true>
                                 <div class="alert alert-warning">
@@ -65,24 +65,24 @@
                                 <hr />
                                 </#if>
                                 <h4>Comentarios</h4>
-                                <#list comentarios as comentario>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">${comentario.getAutorId()} dijo:</div>
-                                    <div class="panel-body">
-                                    ${comentario.getComentario()}
-                                    </div>
-                                    <#if currentUser??>
-                                        <#if currentUser == articulo.getAutorId() || isAdmin??>
-                                            <div class="panel-footer">
-                                                <a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                    Borrar
-                                                </a>
-                                            </div>
-                                        </#if>
-                                    </#if>
-                                </div>
-                                </#list>
+                                <#--<#list comentarios as comentario>-->
+                                <#--<div class="panel panel-default">-->
+                                    <#--<div class="panel-heading">${comentario.getAutorId()} dijo:</div>-->
+                                    <#--<div class="panel-body">-->
+                                    <#--${comentario.getComentario()}-->
+                                    <#--</div>-->
+                                    <#--<#if currentUser??>-->
+                                        <#--<#if currentUser == articulo.getAutorId() || isAdmin??>-->
+                                            <#--<div class="panel-footer">-->
+                                                <#--<a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">-->
+                                                    <#--<span class="glyphicon glyphicon-trash"></span>-->
+                                                    <#--Borrar-->
+                                                <#--</a>-->
+                                            <#--</div>-->
+                                        <#--</#if>-->
+                                    <#--</#if>-->
+                                <#--</div>-->
+                                <#--</#list>-->
                             </div>
                         </div>
                     </div>
