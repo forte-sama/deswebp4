@@ -21,7 +21,7 @@
                         <hr />
                         <h4>Escrita por: <strong>${articulo.getAutor().getUsername()}</strong></h4>
                         <#if currentUser??>
-                            <#if currentUser == articulo.getAutor().getUsername()>
+                            <#if currentUser == articulo.getAutor().getUsername() || isAdmin??>
                             <a href="/article/edit/${articulo.getId()}">
                                 <span class="glyphicon glyphicon-pencil"></span> Editar
                             </a>
@@ -65,24 +65,24 @@
                                 <hr />
                                 </#if>
                                 <h4>Comentarios</h4>
-                                <#--<#list comentarios as comentario>-->
-                                <#--<div class="panel panel-default">-->
-                                    <#--<div class="panel-heading">${comentario.getAutorId()} dijo:</div>-->
-                                    <#--<div class="panel-body">-->
-                                    <#--${comentario.getComentario()}-->
-                                    <#--</div>-->
-                                    <#--<#if currentUser??>-->
-                                        <#--<#if currentUser == articulo.getAutorId() || isAdmin??>-->
-                                            <#--<div class="panel-footer">-->
-                                                <#--<a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">-->
-                                                    <#--<span class="glyphicon glyphicon-trash"></span>-->
-                                                    <#--Borrar-->
-                                                <#--</a>-->
-                                            <#--</div>-->
-                                        <#--</#if>-->
-                                    <#--</#if>-->
-                                <#--</div>-->
-                                <#--</#list>-->
+                                <#list comentarios as comentario>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">${comentario.getAutor().getUsername()} dijo:</div>
+                                    <div class="panel-body">
+                                    ${comentario.getComentario()}
+                                    </div>
+                                    <#if currentUser??>
+                                        <#if currentUser == articulo.getAutor().getUsername() || isAdmin??>
+                                            <div class="panel-footer">
+                                                <a  class="label label-default" href="/comment/delete/${articulo.getId()}/${comentario.getId()}">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    Borrar
+                                                </a>
+                                            </div>
+                                        </#if>
+                                    </#if>
+                                </div>
+                                </#list>
                             </div>
                         </div>
                     </div>

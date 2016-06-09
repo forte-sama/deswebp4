@@ -247,99 +247,103 @@ public class Main {
             return new ModelAndView(data,"create_edit_article.ftl");
         }, new FreeMarkerEngine(configuration));
 
-//        get("/article/edit/:articulo_id", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","edit_article");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            String raw_id = request.params("articulo_id");
-//            Articulo articulo = null;
-//
-//            try {
-//                Long long_id = Long.parseLong(raw_id);
-//                articulo = _GestorArticulos.getArticulo(long_id);
-//            } catch(NumberFormatException e) {
-//                e.printStackTrace();
-//            }
-//
-//            if (articulo != null) {
-//                data.put("id",articulo.getId());
-//                data.put("cuerpo",articulo.getCuerpo());
-//                data.put("titulo",articulo.getTitulo());
-//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(articulo.getId()));
-//            }
-//            else {
-//                response.redirect("/");
-//            }
-//
-//            return new ModelAndView(data,"create_edit_article.ftl");
-//        }, new FreeMarkerEngine(configuration));
+        get("/article/edit/:articulo_id", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
-//        post("/article/edit", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","edit_article");
-//            data.put("loggedIn", Sesion.isLoggedIn(request));
-//            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            //obtener datos del form y del usuario activo
-//            String raw_id = request.queryParams("id");
-//            long long_id = -1;
-//            boolean exito = true;
-//
-//            String autor  = Sesion.getUsuarioActivo(request);
-//            String titulo = request.queryParams("titulo");
-//            String cuerpo = request.queryParams("cuerpo");
-//            String raw_etiquetas = request.queryParams("etiquetas");
-//
-//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-//
-//            try {
-//                long_id = Long.parseLong(raw_id.trim());
-//
+            String raw_id = request.params("articulo_id");
+            Articulo articulo = null;
+
+            try {
+                Long long_id = Long.parseLong(raw_id);
+                articulo = GestorArticulos.getInstance().find(long_id);
+            } catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            if (articulo != null) {
+                data.put("id",articulo.getId());
+                data.put("cuerpo",articulo.getCuerpo());
+                data.put("titulo",articulo.getTitulo());
+                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(articulo.getId()));
+            }
+            else {
+                response.redirect("/");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/article/edit", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_article");
+            data.put("loggedIn", Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            //obtener datos del form y del usuario activo
+            String raw_id = request.queryParams("id");
+            long long_id = -1;
+            boolean exito = true;
+
+            String titulo = request.queryParams("titulo");
+            String cuerpo = request.queryParams("cuerpo");
+            String raw_etiquetas = request.queryParams("etiquetas");
+
+            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+
+            try {
+                long_id = Long.parseLong(raw_id.trim());
+
+                Articulo ar = GestorArticulos.getInstance().find(long_id);
+                ar.setTitulo(titulo);
+                ar.setCuerpo(cuerpo);
+//                etiquetas
 //                exito = _GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
-//            } catch (NumberFormatException e) {
-//                //TODO CAMBIAR MENSAJE DE EXITO
-//                e.printStackTrace();
-//            }
-//
-//            if(exito) {
-//                response.redirect("/");
-//            }
-//            else {
-//                data.put("id",long_id);
-//                data.put("titulo",titulo);
-//                data.put("cuerpo",cuerpo);
-//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(long_id));
-//
-//                data.put("msg_type","error");
-//                data.put("msg","Hubo un error con el formulario.");
-//            }
-//
-//            return new ModelAndView(data,"create_edit_article.ftl");
-//        }, new FreeMarkerEngine(configuration));
+                exito = GestorArticulos.getInstance().editar(ar);
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXITO
+                e.printStackTrace();
+            }
 
-//        get("/article/delete/:article_id", (request, response) -> {
-//            String raw_id = request.params("article_id");
-//
-//            try {
-//                long long_id = Long.parseLong(raw_id);
-//
-//                Articulo articulo = _GestorArticulos.getArticulo(long_id);
-//
-//                if(articulo != null) {
-//                    _GestorArticulos.deleteArticulo(articulo.getId());
-//                }
-//            } catch (NumberFormatException e) {
-//                e.printStackTrace();
-//            }
-//
-//            response.redirect("/");
-//
-//            return "";
-//        });
+            if(exito) {
+                response.redirect("/");
+            }
+            else {
+                data.put("id",long_id);
+                data.put("titulo",titulo);
+                data.put("cuerpo",cuerpo);
+                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(long_id));
+
+                data.put("msg_type","error");
+                data.put("msg","Hubo un error con el formulario.");
+            }
+
+            return new ModelAndView(data,"create_edit_article.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/article/delete/:article_id", (request, response) -> {
+            String raw_id = request.params("article_id");
+
+            try {
+                long long_id = Long.parseLong(raw_id);
+
+                Articulo articulo = GestorArticulos.getInstance().find(long_id);
+
+                if(articulo != null) {
+                    GestorArticulos.getInstance().eliminar(articulo);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            response.redirect("/");
+
+            return "";
+        });
 
         get("/article/view/:article_id", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
@@ -362,7 +366,7 @@ public class Main {
 
                 if(articulo != null) {
                     data.put("articulo", articulo);
-//                    data.put("comentarios", _GestorComentarios.getComentarios(articulo.getId()));
+                    data.put("comentarios",GestorComentarios.getInstance().findByArticle(articulo));
                     exito = true;
                 }
             } catch (NumberFormatException e) {
@@ -378,72 +382,80 @@ public class Main {
         }, new FreeMarkerEngine(configuration));
 
 
-//        post("/comment/new", (request, response) -> {
-//            if(!Sesion.isLoggedIn(request)) {
-//                response.redirect("/");
-//            }
-//
-//            String username        = Sesion.getUsuarioActivo(request);
-//            String comentario      = request.queryParams("comentario");
-//            String raw_articulo_id = request.queryParams("articulo_id");
-//
-//            boolean exito = false;
-//
-//            try {
-//                long long_articulo_id = Long.parseLong(raw_articulo_id);
-//                _GestorComentarios.newComentario(username, comentario, long_articulo_id);
-//                exito = true;
-//            } catch (NumberFormatException e) {
-//                //TODO CAMBIAR MENSAJE DE EXCEPCION
-//                e.printStackTrace();
-//            }
-//
-//            if(exito) {
-//                response.redirect("/article/view/" + raw_articulo_id);
-//            }
-//            else {
-//                response.redirect("/");
-//            }
-//
-//            return "";
-//        });
+        post("/comment/new", (request, response) -> {
+            if(!Sesion.isLoggedIn(request)) {
+                response.redirect("/");
+            }
 
-//        get("/comment/delete/:article_id/:comment_id", (request, response) -> {
-//            String articulo_id   = request.params("article_id");
-//
-//            boolean exito = false;
-//
-//            try {
-//                long long_articulo   = Long.parseLong(articulo_id);
-//
-//                Articulo articulo = _GestorArticulos.getArticulo(long_articulo);
-//
-//                exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
-//
-//            } catch (NumberFormatException e) {
-//                //TODO CAMBIAR MENSAJE DE EXCEPCION
-//                exito = false;
-//                e.printStackTrace();
-//            }
-//
-//            boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-//
-//            if(exito || esAdministrador) {
-//                String comentario_id = request.params("comment_id");
-//
-//                try {
-//                    long long_comentario_id = Long.parseLong(comentario_id);
-//                    _GestorComentarios.deleteComentario(long_comentario_id);
-//                } catch (NumberFormatException e) {
-//                    //TODO CAMBIAR MENSAJE DE EXCEPCION
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            response.redirect("/article/view/" + articulo_id);
-//
-//            return "";
-//        });
+            String username        = Sesion.getUsuarioActivo(request);
+            String cuerpo_com      = request.queryParams("comentario");
+            String raw_articulo_id = request.queryParams("articulo_id");
+
+            boolean exito = false;
+
+            try {
+                long long_articulo_id = Long.parseLong(raw_articulo_id);
+
+                Comentario comentario = new Comentario();
+                comentario.setArticulo(GestorArticulos.getInstance().find(long_articulo_id));
+                comentario.setComentario(cuerpo_com);
+                comentario.setAutor(GestorUsuarios.getInstance().find(username));
+
+                GestorComentarios.getInstance().crear(comentario);
+                exito = true;
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                e.printStackTrace();
+            }
+
+            if(exito) {
+                response.redirect("/article/view/" + raw_articulo_id);
+            }
+            else {
+                response.redirect("/");
+            }
+
+            return "";
+        });
+
+        get("/comment/delete/:article_id/:comment_id", (request, response) -> {
+            String articulo_id   = request.params("article_id");
+
+            boolean exito = false;
+
+            try {
+                long long_articulo   = Long.parseLong(articulo_id);
+
+                Articulo articulo = GestorArticulos.getInstance().find(long_articulo);
+
+                exito = articulo.getAutor().getUsername() == Sesion.getUsuarioActivo(request);
+
+            } catch (NumberFormatException e) {
+                //TODO CAMBIAR MENSAJE DE EXCEPCION
+                exito = false;
+                e.printStackTrace();
+            }
+
+            boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+
+            if(exito || esAdministrador) {
+                String comentario_id = request.params("comment_id");
+
+                try {
+                    long long_comentario_id = Long.parseLong(comentario_id);
+
+                    Comentario comentario = GestorComentarios.getInstance().find(long_comentario_id);
+                    GestorComentarios.getInstance().eliminar(comentario);
+                } catch (NumberFormatException e) {
+                    //TODO CAMBIAR MENSAJE DE EXCEPCION
+                    e.printStackTrace();
+                }
+            }
+
+            response.redirect("/article/view/" + articulo_id);
+
+            return "";
+        });
 
 
         get("/logout",(request, response) -> {
