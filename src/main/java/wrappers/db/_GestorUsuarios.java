@@ -1,7 +1,6 @@
-package wrappers;
+package wrappers.db;
 
 import models.Usuario;
-import org.h2.command.Prepared;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +11,8 @@ import java.util.ArrayList;
 /**
  * Created by forte on 31/05/16.
  */
-public class GestorUsuarios {
-    private GestorUsuarios() { }
+public class _GestorUsuarios {
+    private _GestorUsuarios() { }
 
     public static boolean saveUsuario(Usuario target, boolean estaCreando) {
         boolean exito = true;
@@ -66,27 +65,6 @@ public class GestorUsuarios {
         }
 
         return exito;
-    }
-
-    private static boolean validarDatos(Usuario target, boolean estaCreando) {
-        boolean validUsername = !target.getUsername().isEmpty() && target.getUsername().length() <= 50;
-        boolean validPassword = !target.getPassword().isEmpty() && target.getPassword().length() <= 50;
-        boolean validNombre   = !target.getNombre().isEmpty() && target.getNombre().length() <= 50;
-
-        if(estaCreando) {
-            validUsername = validUsername && esUsernameNuevo(target.getUsername());
-        }
-        else {
-            validNombre = validNombre && esUsernameExistente(target.getUsername());
-        }
-
-        return validNombre && validPassword && validUsername;
-    }
-
-    private static boolean esUsernameExistente(String username) {
-        Usuario us = getUsuario(username);
-
-        return us != null;
     }
 
     public static Usuario getUsuario(String username_target) {
@@ -166,10 +144,10 @@ public class GestorUsuarios {
 
             while(rs.next()) {
                 resp.add(new Usuario(rs.getString("username"),
-                                     rs.getString("password"),
-                                     rs.getString("nombre"),
-                                     rs.getBoolean("es_administrador"),
-                                     rs.getBoolean("es_autor")));
+                        rs.getString("password"),
+                        rs.getString("nombre"),
+                        rs.getBoolean("es_administrador"),
+                        rs.getBoolean("es_autor")));
             }
         } catch (SQLException e) {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
@@ -188,6 +166,27 @@ public class GestorUsuarios {
             //TODO CAMBIAR MENSAJE DE EXCEPCION
             e.printStackTrace();
         }
+    }
+
+    private static boolean validarDatos(Usuario target, boolean estaCreando) {
+        boolean validUsername = !target.getUsername().isEmpty() && target.getUsername().length() <= 50;
+        boolean validPassword = !target.getPassword().isEmpty() && target.getPassword().length() <= 50;
+        boolean validNombre   = !target.getNombre().isEmpty() && target.getNombre().length() <= 50;
+
+        if(estaCreando) {
+            validUsername = validUsername && esUsernameNuevo(target.getUsername());
+        }
+        else {
+            validNombre = validNombre && esUsernameExistente(target.getUsername());
+        }
+
+        return validNombre && validPassword && validUsername;
+    }
+
+    private static boolean esUsernameExistente(String username) {
+        Usuario us = getUsuario(username);
+
+        return us != null;
     }
 
     public static boolean credencialesValidas(String username, String password) {

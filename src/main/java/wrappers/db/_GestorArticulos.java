@@ -1,17 +1,16 @@
-package wrappers;
+package wrappers.db;
 
 import models.Articulo;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by forte on 02/06/16.
  */
-public class GestorArticulos {
+public class _GestorArticulos {
 
     public static boolean newArticulo(String username, String titulo, String cuerpo, Set<String> etiquetas) {
         //TODO CREAR UN ARTICULO
@@ -35,7 +34,7 @@ public class GestorArticulos {
                 exito = pstm.executeUpdate() > 0;
 
                 if(exito) {
-                    exito = GestorEtiquetas.guardarEtiquetas(etiquetas,lastArticulo(username));
+                    exito = _GestorEtiquetas.guardarEtiquetas(etiquetas,lastArticulo(username));
                 }
             } catch (SQLException e) {
                 //TODO CAMBIAR MENSAJE EXCEPCION
@@ -132,7 +131,7 @@ public class GestorArticulos {
                 exito = pstm.executeUpdate() > 0;
 
                 if(exito) {
-                    exito = GestorEtiquetas.guardarEtiquetas(etiquetas,lastArticulo(username));
+                    exito = _GestorEtiquetas.guardarEtiquetas(etiquetas,lastArticulo(username));
                 }
             } catch (SQLException e) {
                 //TODO CAMBIAR MENSAJE EXCEPCION

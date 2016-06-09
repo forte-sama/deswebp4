@@ -1,13 +1,13 @@
 package wrappers;
 
 import models.Articulo;
-import models.Comentario;
 import models.Usuario;
 import spark.Response;
-import wrappers.*;
 
 import static spark.Spark.before;
 import spark.Request;
+import wrappers.db._GestorArticulos;
+import wrappers.db._GestorUsuarios;
 
 /**
  * Created by forte on 01/06/16.
@@ -59,7 +59,7 @@ public class Filtros {
             try {
                 long id = Long.parseLong(request.params("article_id"));
 
-                Articulo articulo = GestorArticulos.getArticulo(id);
+                Articulo articulo = _GestorArticulos.getArticulo(id);
 
                 //si el articulo con article_id es del usuario que ha iniciado sesion
                 boolean esElAutor = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,articulo);
@@ -91,7 +91,7 @@ public class Filtros {
             try {
                 long long_articulo   = Long.parseLong(articulo_id);
 
-                Articulo articulo = GestorArticulos.getArticulo(long_articulo);
+                Articulo articulo = _GestorArticulos.getArticulo(long_articulo);
 
                 exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
 
@@ -115,7 +115,7 @@ public class Filtros {
         try {
             long id = Long.parseLong(raw_id);
 
-            Articulo articulo = GestorArticulos.getArticulo(id);
+            Articulo articulo = _GestorArticulos.getArticulo(id);
 
             //si el articulo con article_id es del usuario que ha iniciado sesion
             exito = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,articulo);
@@ -133,7 +133,7 @@ public class Filtros {
 
         String username = metodo == "get" ? request.params("username") : request.queryParams("username");
 
-        Usuario user = GestorUsuarios.getUsuario(username);
+        Usuario user = _GestorUsuarios.getUsuario(username);
 
         boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
         boolean esUsuarioActivo = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,user);

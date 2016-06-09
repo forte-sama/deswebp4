@@ -1,14 +1,22 @@
 package models;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.io.Serializable;
+
 /**
  * Created by forte on 31/05/16.
  */
-public class Usuario {
+@Entity
+public class Usuario implements Serializable {
+    @Id
     private String username;
     private String password;
     private String nombre;
-    private boolean administrador;
-    private boolean autor;
+    private Boolean administrador;
+    private Boolean autor;
+
+    public Usuario() { }
 
     public Usuario(String username, String password, String nombre, boolean administrador, boolean autor) {
         this.setUsername(username);

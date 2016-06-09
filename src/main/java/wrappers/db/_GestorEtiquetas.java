@@ -1,6 +1,4 @@
-package wrappers;
-
-import models.Etiqueta;
+package wrappers.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +9,7 @@ import java.util.*;
 /**
  * Created by forte on 03/06/16.
  */
-public class GestorEtiquetas {
+public class _GestorEtiquetas {
     public static String cargarEtiquetas(long id) {
         String sql  = "SELECT id_etiqueta FROM articulos_etiquetas WHERE id_articulo=?";
         Connection con = null;

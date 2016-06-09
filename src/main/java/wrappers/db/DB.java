@@ -1,4 +1,4 @@
-package wrappers;
+package wrappers.db;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.tools.Server;
@@ -12,7 +12,7 @@ import java.sql.Statement;
  * Created by forte on 30/05/16.
  */
 public class DB {
-    private static final String URL_CON = "jdbc:h2:tcp://localhost/~/practica3";
+    private static final String URL_CON = "jdbc:h2:tcp://localhost/~/practica4";
     private static final String DB_USER = "sa";
     private static final String DB_PASS = "";
 
