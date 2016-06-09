@@ -34,48 +34,46 @@ public class Main {
         //aplicar filtros
         Filtros.iniciarFiltros();
 
-        //prueba orm usuarios
-        Usuario us = new Usuario();
-        us.setUsername("xxy");
-        us.setPassword("12345123451234512345123451234512345123451234512345");
-        us.setNombre("PRUEBIN");
-        us.setAdministrador(true);
-        us.setAutor(true);
+        //crear admin por default
+//        GestorUsuarios.getInstance().crearAdminDefault();
 
-        if(GestorUsuarios.getInstance().crear(us)) {
-            System.out.println("Si");
-        }
-        else {
-            System.out.println("No");
-        }
+//        //prueba orm usuarios
+//        Usuario us = new Usuario();
+//        us.setUsername("xxy");
+//        us.setPassword("12345123451234512345123451234512345123451234512345");
+//        us.setNombre("PRUEBIN");
+//        us.setAdministrador(false);
+//        us.setAutor(true);
+//        GestorUsuarios.getInstance().crear(us);
 
-        //prueba orm articulos
+//        //prueba orm articulos
 //        Articulo ar = new Articulo();
 //        ar.setTitulo("Prueba ORM");
 //        ar.setCuerpo("Aqui tamo en prueba.");
 //        ar.setAutor(us);
 //        ar.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
 //        GestorArticulos.getInstance().editar(ar);
-//
+
 //        //prueba orm comentarios
 //        Comentario c1 = new Comentario();
 //        c1.setComentario("c1");
 //        c1.setAutor(us);
-//        c1.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("2")));
+//        c1.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
 //        GestorComentarios.getInstance().editar(c1);
 //
 //        Comentario c2 = new Comentario();
 //        c2.setComentario("c2");
 //        c2.setAutor(us);
-//        c2.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("2")));
+//        c2.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
 //        GestorComentarios.getInstance().editar(c2);
 //
 //        Comentario c3 = new Comentario();
 //        c3.setComentario("c3");
 //        c3.setAutor(us);
-//        c3.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("3")));
+//        c3.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("2")));
 //        GestorComentarios.getInstance().editar(c3);
 
+        System.out.println();
         //Rutas
 //        get("/", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
@@ -87,123 +85,124 @@ public class Main {
 //
 //            return new ModelAndView(data,"index.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
-//
-//        get("/admin/user/list", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","list_users");
+
+        get("/admin/user/list", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","list_users");
 //            data.put("loggedIn", Sesion.isLoggedIn(request));
 //            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
 //            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            //obtener los usuarios
-//            data.put("usuarios", _GestorUsuarios.getUsuarios());
-//
-//            return new ModelAndView(data,"user_list.ftl");
-//        }, new FreeMarkerEngine(configuration));
-//
-//        get("/admin/user/delete/:username",(request, response) -> {
-//            String username = request.params("username");
-//
-//            Usuario target = _GestorUsuarios.getUsuario(username);
-//
-//            if(target != null) {
-//                //borrar
-//                _GestorUsuarios.deleteUsuario(username);
-//            }
-//            //redireccionar
-//            response.redirect("/admin/user/list");
-//
-//            return "";
-//        });
-//
-//        get("/admin/user/edit/:username", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","edit_user");
+
+            //obtener los usuarios
+            data.put("usuarios", GestorUsuarios.getInstance().findAll());
+
+            return new ModelAndView(data,"user_list.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        get("/admin/user/delete/:username",(request, response) -> {
+            String username = request.params("username");
+
+            Usuario target = GestorUsuarios.getInstance().find(username);
+
+            if(target != null) {
+                //borrar
+                if(GestorUsuarios.getInstance().eliminar(target)) {
+                    target = null;
+                }
+            }
+            //redireccionar
+            response.redirect("/admin/user/list");
+
+            return "";
+        });
+
+        get("/admin/user/edit/:username", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_user");
 //            data.put("loggedIn", Sesion.isLoggedIn(request));
 //            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
 //            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            String username = request.params("username");
-//            Usuario target = _GestorUsuarios.getUsuario(username.trim());
-//
-//            if(target == null) {
-//                //redireccionar por error
-//                response.redirect("/admin/user/list");
-//            }
-//            else {
-//                //setear datos para llenar formulario
-//                data.put("username",target.getUsername());
-//                data.put("nombre",target.getNombre());
-//
-//                if(target.isAdministrador()) {
-//                    data.put("esAdministrador","si");
-//                }
-//                else {
-//                    if (target.isAutor()) {
-//                        data.put("esAutor", "si");
-//                    }
-//                    else {
-//                        data.put("esLector", "si");
-//                    }
-//                }
-//            }
-//
-//            return new ModelAndView(data,"register_edit_user.ftl");
-//        }, new FreeMarkerEngine(configuration));
-//
-//        post("/admin/user/edit", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","edit_user");
+
+            String username = request.params("username");
+            Usuario target = GestorUsuarios.getInstance().find(username);
+
+            if(target == null) {
+                //redireccionar por error
+                response.redirect("/admin/user/list");
+            }
+            else {
+                //setear datos para llenar formulario
+                data.put("username",target.getUsername());
+                data.put("nombre",target.getNombre());
+
+                if(target.isAdministrador()) {
+                    data.put("esAdministrador","si");
+                }
+                else {
+                    if (target.isAutor()) {
+                        data.put("esAutor", "si");
+                    }
+                    else {
+                        data.put("esLector", "si");
+                    }
+                }
+            }
+
+            return new ModelAndView(data,"register_edit_user.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/admin/user/edit", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","edit_user");
 //            data.put("loggedIn", Sesion.isLoggedIn(request));
 //            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
 //            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            String username = request.queryParams("username");
-//            Usuario target = _GestorUsuarios.getUsuario(username.trim());
-//
-//            if(target == null) {
-//                //redireccionar por error
-//                response.redirect("/admin/user/list");
-//            }
-//            else {
-//                //tratar de actualizar usuario
-//                String password = request.queryParams("password");
-//                String nombre   = request.queryParams("nombre");
-//                boolean esAdministrador = request.queryParams("type").contentEquals("administrador");
-//                boolean esAutor = request.queryParams("type").contentEquals("autor") || esAdministrador;
-//
-//                //actulizar usuario
-//                target = new Usuario(username,password,nombre,esAdministrador,esAutor);
-//
-//                if(_GestorUsuarios.saveUsuario(target,false)) {
-//                    //redireccionar
-//                    response.redirect("/admin/user/list");
-//                }
-//                else {
-//                    //setear datos para llenar formulario
-//                    data.put("username", target.getUsername());
-//                    data.put("nombre", target.getNombre());
-//                    if (target.isAdministrador()) {
-//                        data.put("esAdministrador", "si");
-//                    }
-//                    else {
-//                        if (target.isAutor()) {
-//                            data.put("esAutor", "si");
-//                        } else {
-//                            data.put("esLector", "si");
-//                        }
-//                    }
-//
-//                    data.put("msg_type", "error");
-//                    data.put("msg", "Hubo un error con el formulario. Revisa los campos.");
-//                }
-//            }
-//
-//            return new ModelAndView(data,"register_edit_user.ftl");
-//        }, new FreeMarkerEngine(configuration));
-//
-//
+
+            String username = request.queryParams("username");
+            Usuario target = GestorUsuarios.getInstance().find(username.trim());
+
+            if(target == null) {
+                //redireccionar por error
+                response.redirect("/admin/user/list");
+            }
+            else {
+                //tratar de actualizar usuario
+                String password = request.queryParams("password");
+                String nombre   = request.queryParams("nombre");
+                boolean esAdministrador = request.queryParams("type").contentEquals("administrador");
+                boolean esAutor = request.queryParams("type").contentEquals("autor") || esAdministrador;
+
+                //actulizar usuario
+                target = new Usuario(username,password,nombre,esAdministrador,esAutor);
+
+                if(GestorUsuarios.getInstance().editar(target)) {
+                    //redireccionar
+                    response.redirect("/admin/user/list");
+                }
+                else {
+                    //setear datos para llenar formulario
+                    data.put("username", target.getUsername());
+                    data.put("nombre", target.getNombre());
+                    if (target.isAdministrador()) {
+                        data.put("esAdministrador", "si");
+                    }
+                    else {
+                        if (target.isAutor()) {
+                            data.put("esAutor", "si");
+                        } else {
+                            data.put("esLector", "si");
+                        }
+                    }
+
+                    data.put("msg_type", "error");
+                    data.put("msg", "Hubo un error con el formulario. Revisa los campos.");
+                }
+            }
+
+            return new ModelAndView(data,"register_edit_user.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+
 //        get("/article/new", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","new_article");
@@ -213,7 +212,7 @@ public class Main {
 //
 //            return new ModelAndView(data,"create_edit_article.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
+
 //        post("/article/new", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","new_article");
@@ -245,7 +244,7 @@ public class Main {
 //
 //            return new ModelAndView(data,"create_edit_article.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
+
 //        get("/article/edit/:articulo_id", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","edit_article");
@@ -275,7 +274,7 @@ public class Main {
 //
 //            return new ModelAndView(data,"create_edit_article.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
+
 //        post("/article/edit", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","edit_article");
@@ -319,7 +318,7 @@ public class Main {
 //
 //            return new ModelAndView(data,"create_edit_article.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
+
 //        get("/article/delete/:article_id", (request, response) -> {
 //            String raw_id = request.params("article_id");
 //
@@ -339,7 +338,7 @@ public class Main {
 //
 //            return "";
 //        });
-//
+
 //        get("/article/view/:article_id", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","view_article");
@@ -375,8 +374,8 @@ public class Main {
 //
 //            return new ModelAndView(data,"view_article.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
-//
+
+
 //        post("/comment/new", (request, response) -> {
 //            if(!Sesion.isLoggedIn(request)) {
 //                response.redirect("/");
@@ -406,7 +405,7 @@ public class Main {
 //
 //            return "";
 //        });
-//
+
 //        get("/comment/delete/:article_id/:comment_id", (request, response) -> {
 //            String articulo_id   = request.params("article_id");
 //
@@ -443,8 +442,8 @@ public class Main {
 //
 //            return "";
 //        });
-//
-//
+
+
 //        get("/login", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","login");
@@ -454,7 +453,7 @@ public class Main {
 //
 //            return new ModelAndView(data,"login.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
+
 //        get("/logout",(request, response) -> {
 //            Sesion.cerrar(request);
 //
@@ -462,7 +461,7 @@ public class Main {
 //
 //            return "";
 //        });
-//
+
 //        post("/login", (request, response) -> {
 //            HashMap<String,Object> data = new HashMap<>();
 //            data.put("action","login");
@@ -494,58 +493,58 @@ public class Main {
 //
 //            return new ModelAndView(data,"login.ftl");
 //        }, new FreeMarkerEngine(configuration));
-//
-//        get("/user/register", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","register");
+
+        get("/user/register", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","register");
 //            data.put("loggedIn", Sesion.isLoggedIn(request));
 //            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
 //            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            return new ModelAndView(data,"register_edit_user.ftl");
-//        }, new FreeMarkerEngine(configuration));
-//
-//        post("/user/register", (request, response) -> {
-//            HashMap<String,Object> data = new HashMap<>();
-//            data.put("action","register");
+
+            return new ModelAndView(data,"register_edit_user.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+        post("/user/register", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","register");
 //            data.put("loggedIn", Sesion.isLoggedIn(request));
 //            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
 //            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-//
-//            //si el request llego desde el formulario
-//            if(!request.queryParams("submit").isEmpty()) {
-//                //obtener datos de nuevo usuario
-//                String username = request.queryParams("username");
-//                String password = request.queryParams("password");
-//                String nombre   = request.queryParams("nombre");
-//                //no es administrador by default
-//                boolean esAutor = request.queryParams("type").contentEquals("autor"); //1 : autor, 0 : lector
-//
-//                //crear nueva instancia
-//                Usuario newUser = new Usuario(username,password,nombre,false,esAutor);
-//
-//                //persistir nueva instancia, en caso de ser valida
-//                if(_GestorUsuarios.saveUsuario(newUser,true)) {
-//                    //redireccionar con mensaje de exito
-//                    response.redirect("/");
-//                }
-//                else {
-//                    //setear datos para llenar formulario
-//                    data.put("username",newUser.getUsername());
-//                    data.put("nombre",newUser.getNombre());
-//                    if(newUser.isAutor()) {
-//                        data.put("esAutor","si");
-//                    }
-//                    else {
-//                        data.put("esLector","si");
-//                    }
-//
-//                    data.put("msg_type","error");
-//                    data.put("msg","No se pudo crear usuario. Revisar datos del formulario.");
-//                }
-//            }
-//
-//            return new ModelAndView(data,"register_edit_user.ftl");
-//        }, new FreeMarkerEngine(configuration));
+
+            //si el request llego desde el formulario
+            if(!request.queryParams("submit").isEmpty()) {
+                //obtener datos de nuevo usuario
+                String username = request.queryParams("username");
+                String password = request.queryParams("password");
+                String nombre   = request.queryParams("nombre");
+                //no es administrador by default
+                boolean esAutor = request.queryParams("type").contentEquals("autor"); //1 : autor, 0 : lector
+
+                //crear nueva instancia
+                Usuario newUser = new Usuario(username,password,nombre,false,esAutor);
+
+                //persistir nueva instancia, en caso de ser valida
+                if(GestorUsuarios.getInstance().crear(newUser)) {
+                    //redireccionar con mensaje de exito
+                    response.redirect("/");
+                }
+                else {
+                    //setear datos para llenar formulario
+                    data.put("username",newUser.getUsername());
+                    data.put("nombre",newUser.getNombre());
+                    if(newUser.isAutor()) {
+                        data.put("esAutor","si");
+                    }
+                    else {
+                        data.put("esLector","si");
+                    }
+
+                    data.put("msg_type","error");
+                    data.put("msg","No se pudo crear usuario. Revisar datos del formulario.");
+                }
+            }
+
+            return new ModelAndView(data,"register_edit_user.ftl");
+        }, new FreeMarkerEngine(configuration));
     }
 }

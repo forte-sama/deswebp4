@@ -21,19 +21,31 @@ public class GestorUsuarios extends EntityManagerCRUD<Usuario> {
     }
 
     public static GestorUsuarios getInstance() {
-        if(inst == null){
+        if (inst == null) {
             inst = new GestorUsuarios();
+            inst.crearAdminDefault();
         }
         return inst;
     }
 
     /** CRUD METHODS */
+    @Override
     public boolean crear(Usuario user) {
         boolean success = false;
 
-        if(validarDatos(user,true)) {
-            super.crear(user);
-            success = true;
+        if (validarDatos(user,true)) {
+            success = super.crear(user);
+        }
+
+        return success;
+    }
+
+    @Override
+    public boolean editar(Usuario user) {
+        boolean success = false;
+
+        if(validarDatos(user,false)) {
+            success = super.editar(user);
         }
 
         return success;
@@ -41,6 +53,20 @@ public class GestorUsuarios extends EntityManagerCRUD<Usuario> {
 
 
     /** OTHER METHODS */
+
+    public void crearAdminDefault() {
+        Usuario admin_default = new Usuario();
+        admin_default.setUsername("admin");
+        admin_default.setPassword("admin");
+        admin_default.setNombre("admin");
+        admin_default.setAdministrador(true);
+        admin_default.setAutor(true);
+
+        //editar fue usado por el merge de la superclase
+        //inserta si no esta y modifica si esta
+        super.editar(admin_default);
+    }
+
     private boolean validarDatos(Usuario target, boolean estaCreando) {
         boolean validUsername = stringValido(target.getUsername(), 50);
         boolean validPassword = stringValido(target.getPassword(), 50);

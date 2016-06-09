@@ -26,7 +26,7 @@ public class EntityManagerCRUD<T> {
         return factory.createEntityManager();
     }
 
-    public boolean crear(T entidad){
+    public boolean crear(T entidad) {
         boolean success = false;
 
         javax.persistence.EntityManager em = getEntityManager();
@@ -37,7 +37,7 @@ public class EntityManagerCRUD<T> {
             em.getTransaction().commit();
 
             success = true;
-        } catch (Exception ex){
+        } catch (Exception ex) {
 
             em.getTransaction().rollback();
             throw  ex;
@@ -48,34 +48,46 @@ public class EntityManagerCRUD<T> {
         return success;
     }
 
-    public void editar(T entidad){
+    public boolean editar(T entidad) {
+        boolean success = false;
+
         javax.persistence.EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         try {
             em.merge(entidad);
             em.getTransaction().commit();
-        } catch (Exception ex){
+
+            success = true;
+        } catch (Exception ex) {
             em.getTransaction().rollback();
             throw  ex;
         } finally {
             em.close();
         }
+
+        return success;
     }
 
-    public void eliminar(T entidad){
+    public boolean eliminar(T entidad) {
+        boolean success = false;
+
         javax.persistence.EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
         try {
-            em.remove(entidad);
+            em.remove(em.contains(entidad) ? entidad : em.merge(entidad));
             em.getTransaction().commit();
-        } catch (Exception ex){
+
+            success = true;
+        } catch (Exception ex) {
             em.getTransaction().rollback();
             throw  ex;
         } finally {
             em.close();
         }
+
+        return success;
     }
 
     public T find(Object id) {
