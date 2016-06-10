@@ -76,11 +76,8 @@ public class EntityManagerCRUD<T> {
         em.getTransaction().begin();
 
         try {
-            //TODO borrar cada comentario antes de borrar articulo
             em.remove(em.contains(entidad) ? entidad : em.merge(entidad));
             em.getTransaction().commit();
-
-            entidad = null;
 
             success = true;
         } catch (Exception ex) {

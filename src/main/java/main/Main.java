@@ -32,6 +32,9 @@ public class Main {
         //aplicar filtros
         Filtros.iniciarFiltros();
 
+        //iniciar db
+        DBService.test();
+
 //        //prueba orm usuarios
 //        Usuario us = new Usuario();
 //        us.setUsername("xxy");

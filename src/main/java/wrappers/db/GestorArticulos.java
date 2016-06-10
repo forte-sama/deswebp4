@@ -66,6 +66,7 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
     }
 
     /** OTHER METHODS */
+
     public List<Articulo> find_page(Integer pageNumber) {
 
         int offset = (pageNumber - 1) * pageSize;

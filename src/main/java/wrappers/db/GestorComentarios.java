@@ -73,7 +73,9 @@ public class GestorComentarios extends EntityManagerCRUD<Comentario> {
         //do the thing
         try {
             //do the exact thing
-            TypedQuery<Long> query = em.createQuery("SELECT COUNT(c) FROM Comentario c WHERE c.articulo = :articulo AND c.voto = true", Long.class);
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(c) " +
+                                                    "FROM Comentario c " +
+                                                    "WHERE c.articulo = :articulo AND c.voto = true", Long.class);
 
             resp = query.setParameter("articulo",article).getSingleResult();
         } catch (Exception ex) {

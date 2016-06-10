@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import static javafx.scene.input.KeyCode.T;
 import static utils.Utils.stringValido;
-import static wrappers.db._GestorUsuarios.getUsuario;
 
 /**
  * Created by forte on 08/06/16.
