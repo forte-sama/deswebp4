@@ -1,11 +1,13 @@
 package models;
 
+import wrappers.db.GestorEtiquetas;
 import wrappers.db._GestorEtiquetas;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,5 +85,13 @@ public class Articulo implements Serializable {
         int length = this.getCuerpo().length();
 
         return this.getCuerpo().substring(0,length >= 70 ? 69 : length) + "...";
+    }
+
+    public List<Etiqueta> etiquetas() {
+        return GestorEtiquetas.getInstance().findByArticle(this);
+    }
+
+    public boolean limpiarEtiquetas() {
+        return GestorEtiquetas.getInstance().eliminarByArticle(this);
     }
 }

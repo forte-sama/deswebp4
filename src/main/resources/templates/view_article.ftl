@@ -34,9 +34,9 @@
                             ${articulo.getCuerpo()}
                             </div>
                             <div class="col col-md-4">
-                                <#--<#list articulo.etiquetas() as etiqueta>-->
-                                <#--<span class="label label-danger">${etiqueta}</span>-->
-                                <#--</#list>-->
+                                <#list articulo.etiquetas() as etiqueta>
+                                <span class="label label-danger">${etiqueta.getEtiqueta()}</span>
+                                </#list>
                                 <hr />
                                 <#if loggedIn?? && loggedIn == true>
                                 <div class="alert alert-warning">

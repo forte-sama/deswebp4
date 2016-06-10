@@ -8,7 +8,7 @@
         <class>models.Usuario</class>
         <class>models.Articulo</class>
         <class>models.Comentario</class>
-        <!--<class>models.Etiqueta</class>-->
+        <class>models.Etiqueta</class>
         <properties>
             <!--<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />-->
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/practica4" />

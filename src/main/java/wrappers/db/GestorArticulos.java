@@ -35,6 +35,37 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
         return inst;
     }
 
+    /** CRUDS METHODS */
+    @Override
+    public boolean crear(Articulo articulo) {
+        boolean success = false;
+
+        //validar datos
+        boolean datosValidos = stringValido(articulo.getTitulo(),500) && stringValido(articulo.getCuerpo(),10000);
+        datosValidos = datosValidos && articulo.getAutor() != null;
+
+        if(datosValidos) {
+            success = super.crear(articulo);
+        }
+
+        return success;
+    }
+
+    @Override
+    public boolean editar(Articulo articulo) {
+        boolean success = false;
+
+        boolean datosValidos = stringValido(articulo.getTitulo(),500) && stringValido(articulo.getCuerpo(),10000);
+
+        if(datosValidos) {
+            success = super.editar(articulo);
+            articulo.limpiarEtiquetas();
+        }
+
+        return success;
+    }
+
+    /** OTHER METHODS */
     public List<Articulo> find_page(Integer pageNumber) {
 
         int offset = (pageNumber - 1) * pageSize;
@@ -55,32 +86,5 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
 
     public boolean hasMoreArticles() {
         return hasMore;
-    }
-
-    @Override
-    public boolean crear(Articulo articulo) {
-        boolean success = false;
-
-        //validar datos
-        boolean datosValidos = stringValido(articulo.getTitulo(),500) && stringValido(articulo.getCuerpo(),10000);
-
-        if(datosValidos) {
-            success = super.crear(articulo);
-        }
-
-        return success;
-    }
-
-    @Override
-    public boolean editar(Articulo articulo) {
-        boolean success = false;
-
-        boolean datosValidos = stringValido(articulo.getTitulo(),500) && stringValido(articulo.getCuerpo(),10000);
-
-        if(datosValidos) {
-            success = super.editar(articulo);
-        }
-
-        return success;
     }
 }

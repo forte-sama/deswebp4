@@ -45,10 +45,10 @@ public class Filtros {
                 response.redirect("/");
             }
         });
-        before("/article/edit/:article_id", (request, response) -> {
-            //validar por metodo GET el acceso editar el articulo con id=article_id
-            validarAccesoArticulo(request,response,"get");
-        });
+//        before("/article/edit/:article_id", (request, response) -> {
+//            //validar por metodo GET el acceso editar el articulo con id=article_id
+//            validarAccesoArticulo(request,response,"get");
+//        });
         before("/article/edit", (request, response) -> {
             //validar por metodo POST el acceso editar el articulo con id=article_id
             validarAccesoArticulo(request,response,"post");

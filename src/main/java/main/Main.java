@@ -3,6 +3,7 @@ package main;
 import freemarker.template.Configuration;
 import models.Articulo;
 import models.Comentario;
+import models.Etiqueta;
 import models.Usuario;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -245,8 +246,6 @@ public class Main {
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-
             //Crear articulo en el gestor
             Articulo nuevo = new Articulo();
             nuevo.setTitulo(titulo);
@@ -256,6 +255,16 @@ public class Main {
             boolean exito = GestorArticulos.getInstance().crear(nuevo);
 
             if(exito) {
+                //si se creo el articulo, crear las etiquetas
+                Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+                for(String str : etiquetas) {
+                    Etiqueta e = new Etiqueta();
+                    e.setEtiqueta(str);
+                    e.setArticulo(nuevo);
+
+                    GestorEtiquetas.getInstance().crear(e);
+                }
+
                 //redireccionar a vista con mis articulos
                 response.redirect("/");
             }
@@ -292,7 +301,7 @@ public class Main {
                 data.put("id",articulo.getId());
                 data.put("cuerpo",articulo.getCuerpo());
                 data.put("titulo",articulo.getTitulo());
-//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(articulo.getId()));
+                data.put("etiquetas",GestorEtiquetas.joinListEtiquetdas(articulo.etiquetas()));
             }
             else {
                 response.redirect("/");
@@ -317,8 +326,6 @@ public class Main {
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-//            Set<String> etiquetas = _GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-
             try {
                 long_id = Long.parseLong(raw_id.trim());
 
@@ -328,6 +335,7 @@ public class Main {
 //                etiquetas
 //                exito = _GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
                 exito = GestorArticulos.getInstance().editar(ar);
+                exito = exito && GestorEtiquetas.getInstance().crearEtiquetasByArticle(ar,raw_etiquetas);
             } catch (NumberFormatException e) {
                 //TODO CAMBIAR MENSAJE DE EXITO
                 e.printStackTrace();

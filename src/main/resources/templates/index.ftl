@@ -26,12 +26,12 @@
                     <div class="panel-footer">
                         <div class="row">
                             <div class="col-md-5">
-                            <#--<#list articulo.etiquetas() as etiqueta>-->
-                            <#--<span class="label label-danger">${etiqueta}</span>-->
-                            <#--</#list>-->
+                            <#list articulo.etiquetas() as etiqueta>
+                            <span class="label label-danger">${etiqueta.getEtiqueta()}</span>
+                            </#list>
                             </div>
                             <div class="col-md-4 text-warning" style="text-align: right;">
-                                <a href="article/view/${articulo.getId()}" class="btn btn-success">Ver mas</a>
+                                <a href="/article/view/${articulo.getId()}" class="btn btn-success">Ver mas</a>
                             </div>
                             <div class="col-md-3 text-warning" style="text-align: right;">
                                 <p>Escrita  en <em>${articulo.getFecha()}</em> por: <strong>${articulo.getAutor().getUsername()}</strong></p>

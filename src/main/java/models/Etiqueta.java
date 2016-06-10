@@ -1,9 +1,6 @@
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -15,6 +12,8 @@ public class Etiqueta implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String etiqueta;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Articulo articulo;
 
     public Etiqueta() { }
 
@@ -37,5 +36,13 @@ public class Etiqueta implements Serializable {
 
     public void setEtiqueta(String etiqueta) {
         this.etiqueta = etiqueta;
+    }
+
+    public Articulo getArticulo() {
+        return articulo;
+    }
+
+    public void setArticulo(Articulo articulo) {
+        this.articulo = articulo;
     }
 }
