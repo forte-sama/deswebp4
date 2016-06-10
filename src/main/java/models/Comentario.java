@@ -1,6 +1,7 @@
 package models;
 
 import org.omg.CORBA.COMM_FAILURE;
+import wrappers.db.GestorLikesComentarios;
 
 import javax.persistence.*;
 
@@ -27,6 +28,10 @@ public class Comentario {
         this.comentario = comentario;
         this.autor = autor;
         this.articulo = articulo;
+    }
+
+    public String countLikes() {
+        return GestorLikesComentarios.getInstance().likeCount(this) + "";
     }
 
     public long getId() {

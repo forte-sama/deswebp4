@@ -35,41 +35,8 @@ public class Main {
         //iniciar db
         DBService.test();
 
-//        //prueba orm usuarios
-//        Usuario us = new Usuario();
-//        us.setUsername("xxy");
-//        us.setPassword("12345123451234512345123451234512345123451234512345");
-//        us.setNombre("PRUEBIN");
-//        us.setAdministrador(false);
-//        us.setAutor(true);
-//        GestorUsuarios.getInstance().editar(us);
-
-//        //prueba orm articulos
-//        Articulo ar = new Articulo();
-//        ar.setTitulo("si si si ahora prueba ORM si si si");
-//        ar.setCuerpo("Aqui tamo en prueba.");
-//        ar.setAutor(us);
-//        ar.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
-//        GestorArticulos.getInstance().editar(ar);
-
-//        //prueba orm comentarios
-//        Comentario c1 = new Comentario();
-//        c1.setComentario("c1");
-//        c1.setAutor(us);
-//        c1.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
-//        GestorComentarios.getInstance().editar(c1);
-//
-//        Comentario c2 = new Comentario();
-//        c2.setComentario("c2");
-//        c2.setAutor(us);
-//        c2.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
-//        GestorComentarios.getInstance().editar(c2);
-//
-//        Comentario c3 = new Comentario();
-//        c3.setComentario("c3");
-//        c3.setAutor(us);
-//        c3.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("2")));
-//        GestorComentarios.getInstance().editar(c3);
+        //crear usuario por default si no se ha creado ya
+        GestorUsuarios.getInstance().editar(new Usuario("admin","admin","admin",true,true));
 
         System.out.println();
         //Rutas
@@ -371,8 +338,6 @@ public class Main {
                 Articulo ar = GestorArticulos.getInstance().find(long_id);
                 ar.setTitulo(titulo);
                 ar.setCuerpo(cuerpo);
-//                etiquetas
-//                exito = _GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
                 exito = GestorArticulos.getInstance().editar(ar);
                 exito = exito && GestorEtiquetas.getInstance().crearEtiquetasByArticle(ar,raw_etiquetas);
             } catch (NumberFormatException e) {
@@ -493,6 +458,30 @@ public class Main {
                 response.redirect("/");
             }
 
+            return "";
+        });
+
+        get("/comment/like/:comentario/:articulo", (request, response) -> {
+            if(!Sesion.isLoggedIn(request)) {
+                response.redirect("/");
+            }
+
+            String username          = Sesion.getUsuarioActivo(request);
+            String raw_comentario_id = request.params("comentario");
+            String articulo_id       = request.params("articulo");
+
+            try {
+                Long comentario_id = Long.parseLong(raw_comentario_id);
+
+                Usuario usuario = GestorUsuarios.getInstance().find(username);
+                Comentario comentario = GestorComentarios.getInstance().find(comentario_id);
+
+                GestorLikesComentarios.getInstance().darLike(usuario, comentario);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            response.redirect("/article/view/" + articulo_id.trim());
             return "";
         });
 

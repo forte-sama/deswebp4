@@ -89,6 +89,15 @@
                                             <span class="glyphicon glyphicon-thumbs-down"></span>
                                         </span>
                                         </#if>
+                                        <span class="label label-default">
+                                            ${comentario.countLikes()}
+                                        </span>
+                                        <#if  loggedIn?? && loggedIn == true>
+                                        &nbsp;
+                                        <a href="/comment/like/${comentario.getId()}/${articulo.getId()}" class="btn btn-default btn-sm">
+                                            Like
+                                        </a>
+                                        </#if>
                                         &nbsp;
                                         ${comentario.getAutor().getUsername()} dijo:
                                     </div>
