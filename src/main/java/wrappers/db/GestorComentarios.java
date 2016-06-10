@@ -47,22 +47,16 @@ public class GestorComentarios extends EntityManagerCRUD<Comentario> {
         List<Comentario> resp = new ArrayList<>();
 
         EntityManager em = getEntityManager();
-        em.getTransaction().begin();
 
         //do the thing
-
         try {
             //do the exact thing
-            TypedQuery<Comentario> query = em.createQuery(
-                    "SELECT c FROM Comentario c WHERE c.articulo = :articulo", Comentario.class);
+            TypedQuery<Comentario> query = em.createQuery("SELECT c FROM Comentario c WHERE c.articulo = :articulo", Comentario.class);
 
             resp = query.setParameter("articulo",article).getResultList();
 
-            em.getTransaction().commit();
 
         } catch (Exception ex) {
-
-            em.getTransaction().rollback();
             throw  ex;
         } finally {
             em.close();

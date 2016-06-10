@@ -1,11 +1,22 @@
 package models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.io.Serializable;
+
 /**
  * Created by forte on 31/05/16.
  */
-public class Etiqueta {
+@Entity
+public class Etiqueta implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String etiqueta;
+
+    public Etiqueta() { }
 
     public Etiqueta(long id, String etiqueta) {
         this.setId(id);

@@ -84,8 +84,4 @@ public class Articulo implements Serializable {
 
         return this.getCuerpo().substring(0,length >= 70 ? 69 : length) + "...";
     }
-
-//    public Set<String> etiquetas() {
-//        return _GestorEtiquetas.cargarListaEtiquetas(this.getId());
-//    }
 }

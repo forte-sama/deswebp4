@@ -1,7 +1,14 @@
 package wrappers.db;
 
 import models.Articulo;
+import models.Comentario;
 import models.Usuario;
+import org.hibernate.Criteria;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
 
 import static utils.Utils.stringValido;
 
@@ -11,9 +18,14 @@ import static utils.Utils.stringValido;
 public class GestorArticulos extends EntityManagerCRUD<Articulo> {
 
     private static GestorArticulos inst;
+    private Integer pageSize;
+    private boolean hasMore;
 
     private GestorArticulos() {
         super(Articulo.class);
+
+        hasMore  = false;
+        pageSize = 5;
     }
 
     public static GestorArticulos getInstance() {
@@ -21,6 +33,28 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
             inst = new GestorArticulos();
         }
         return inst;
+    }
+
+    public List<Articulo> find_page(Integer pageNumber) {
+
+        int offset = (pageNumber - 1) * pageSize;
+
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+
+        TypedQuery<Articulo> query = em.createQuery("SELECT a FROM Articulo a", Articulo.class);
+
+        hasMore = query.getResultList().size() >= offset + pageSize;
+
+        query.setFirstResult(offset);
+        query.setMaxResults(pageSize);
+        List<Articulo> resp = query.getResultList();
+
+        return resp;
+    }
+
+    public boolean hasMoreArticles() {
+        return hasMore;
     }
 
     @Override

@@ -40,6 +40,21 @@
                     </div>
                 </div>
                 </#list>
+                <#if proxima_pagina?? || anterior_pagina??>
+                <hr>
+                <div class="row">
+                    <div class="col col-md-3">
+                        <#if anterior_pagina??>
+                        <a href="/page/${anterior_pagina}" class="label label-default">Pagina Anterior</a>
+                        </#if>
+                    </div>
+                    <#if proxima_pagina??>
+                    <div class="col col-md-3 col-md-offset-6" style="text-align: right">
+                        <a href="/page/${proxima_pagina}" class="label label-default">Pagina Siguiente</a>
+                    </div>
+                    </#if>
+                </div>
+                </#if>
             </div>
         </div>
     </div>

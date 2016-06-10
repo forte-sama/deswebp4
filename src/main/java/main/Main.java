@@ -73,12 +73,36 @@ public class Main {
         System.out.println();
         //Rutas
         get("/", (request, response) -> {
+            response.redirect("/page/1");
+
+            return "";
+        });
+
+        get("/page/:pageNumber", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","index");
             data.put("loggedIn",Sesion.isLoggedIn(request));
             boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
             data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
-            data.put("articulos", GestorArticulos.getInstance().findAll());
+
+            try {
+                int page = Integer.parseInt(request.params("pageNumber"));
+
+                page = Math.max(1,page);
+
+                data.put("articulos",GestorArticulos.getInstance().find_page(page));
+
+                if(GestorArticulos.getInstance().hasMoreArticles()) {
+                    data.put("proxima_pagina", "" + (page + 1));
+                }
+                if(page > 1) {
+                    data.put("anterior_pagina","" + (page - 1));
+                }
+
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -421,8 +445,13 @@ public class Main {
         get("/comment/delete/:article_id/:comment_id", (request, response) -> {
             String articulo_id   = request.params("article_id");
 
+            Articulo ar = GestorArticulos.getInstance().find(articulo_id);
+
             boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
-            boolean esAutor = Sesion.getTipoUsuarioActivo(request) == "administrador";
+            boolean esAutor = false;
+            if(ar != null) {
+                esAutor = esAutor && ar.getAutor().getUsername() == Sesion.getUsuarioActivo(request);
+            }
 
             if(esAutor || esAdministrador) {
                 String comentario_id = request.params("comment_id");
