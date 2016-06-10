@@ -18,6 +18,7 @@ public class Comentario {
     private Usuario autor;
     @OneToOne(fetch = FetchType.LAZY)
     private Articulo articulo;
+    private boolean voto;
 
     public Comentario() { }
 
@@ -58,5 +59,13 @@ public class Comentario {
 
     public void setArticulo(Articulo articulo) {
         this.articulo = articulo;
+    }
+
+    public boolean isVoto() {
+        return voto;
+    }
+
+    public void setVoto(boolean voto) {
+        this.voto = voto;
     }
 }

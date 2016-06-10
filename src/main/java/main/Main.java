@@ -29,9 +29,6 @@ public class Main {
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(Main.class, "/templates");
 
-        //probar estado de la base de datos
-        DB.test();
-
         //aplicar filtros
         Filtros.iniciarFiltros();
 
@@ -107,6 +104,45 @@ public class Main {
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
+
+
+        get("/tag/:etiqueta/",(request, response) -> {
+            String tag = request.params("etiqueta");
+            response.redirect("/tag/" + tag + "/page/1");
+
+            return "";
+        });
+
+        get("/tag/:etiqueta/page/:pageNumber", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","index");
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            try {
+                int page = Integer.parseInt(request.params("pageNumber"));
+                page = Math.max(1,page);
+
+                String tag = request.params("etiqueta");
+
+                data.put("articulos",GestorArticulos.getInstance().find_by_tag(page,tag));
+
+                if(GestorArticulos.getInstance().hasMoreArticles()) {
+                    data.put("proxima_pagina", "" + (page + 1));
+                }
+                if(page > 1) {
+                    data.put("anterior_pagina","" + (page - 1));
+                }
+
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            return new ModelAndView(data,"index.ftl");
+        }, new FreeMarkerEngine(configuration));
+
 
         get("/admin/user/list", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
@@ -399,6 +435,10 @@ public class Main {
                 if(articulo != null) {
                     data.put("articulo", articulo);
                     data.put("comentarios",GestorComentarios.getInstance().findByArticle(articulo));
+
+
+                    data.put("num_likes",GestorComentarios.getInstance().likeCount(articulo) + "");
+
                     exito = true;
                 }
             } catch (NumberFormatException e) {
@@ -422,6 +462,7 @@ public class Main {
             String username        = Sesion.getUsuarioActivo(request);
             String cuerpo_com      = request.queryParams("comentario");
             String raw_articulo_id = request.queryParams("articulo_id");
+            String voto            = request.queryParams("voto");
 
             boolean exito = false;
 
@@ -432,6 +473,8 @@ public class Main {
                 comentario.setArticulo(GestorArticulos.getInstance().find(long_articulo_id));
                 comentario.setComentario(cuerpo_com);
                 comentario.setAutor(GestorUsuarios.getInstance().find(username));
+                boolean esVotoBueno = (voto != null && voto.contentEquals("bueno"));
+                comentario.setVoto(esVotoBueno);
 
                 GestorComentarios.getInstance().crear(comentario);
                 exito = true;
@@ -451,8 +494,9 @@ public class Main {
         });
 
         get("/comment/delete/:article_id/:comment_id", (request, response) -> {
-            String articulo_id   = request.params("article_id");
+            String raw_articulo_id   = request.params("article_id");
 
+            long articulo_id = Long.parseLong(raw_articulo_id);
             Articulo ar = GestorArticulos.getInstance().find(articulo_id);
 
             boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);

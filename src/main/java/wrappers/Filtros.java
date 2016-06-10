@@ -7,8 +7,7 @@ import spark.Response;
 import static spark.Spark.before;
 import spark.Request;
 import wrappers.db.GestorArticulos;
-import wrappers.db._GestorArticulos;
-import wrappers.db._GestorUsuarios;
+import wrappers.db.GestorUsuarios;
 
 /**
  * Created by forte on 01/06/16.
@@ -134,7 +133,7 @@ public class Filtros {
 
         String username = metodo == "get" ? request.params("username") : request.queryParams("username");
 
-        Usuario user = _GestorUsuarios.getUsuario(username);
+        Usuario user = GestorUsuarios.getInstance().find(username);
 
         boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
         boolean esUsuarioActivo = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,user);

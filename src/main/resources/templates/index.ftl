@@ -27,7 +27,9 @@
                         <div class="row">
                             <div class="col-md-5">
                             <#list articulo.etiquetas() as etiqueta>
-                            <span class="label label-danger">${etiqueta.getEtiqueta()}</span>
+                                <a class="label label-danger" href="/tag/${etiqueta.getEtiqueta()}/page/1">
+                                ${etiqueta.getEtiqueta()}
+                                </a> &nbsp;
                             </#list>
                             </div>
                             <div class="col-md-4 text-warning" style="text-align: right;">

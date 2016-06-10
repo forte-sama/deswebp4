@@ -1,14 +1,12 @@
 package models;
 
 import wrappers.db.GestorEtiquetas;
-import wrappers.db._GestorEtiquetas;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by forte on 31/05/16.

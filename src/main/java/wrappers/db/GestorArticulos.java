@@ -73,9 +73,31 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
-        TypedQuery<Articulo> query = em.createQuery("SELECT a FROM Articulo a", Articulo.class);
+        TypedQuery<Articulo> query = em.createQuery("SELECT a FROM Articulo a ORDER BY a.fecha DESC", Articulo.class);
 
         hasMore = query.getResultList().size() >= offset + pageSize;
+
+        query.setFirstResult(offset);
+        query.setMaxResults(pageSize);
+        List<Articulo> resp = query.getResultList();
+
+        return resp;
+    }
+
+    public List<Articulo> find_by_tag(Integer pageNumber, String etiqueta) {
+
+        int offset = (pageNumber - 1) * pageSize;
+
+        EntityManager em = getEntityManager();
+        em.getTransaction().begin();
+
+        TypedQuery<Articulo> query = em.createQuery("SELECT a " +
+                                                    "FROM Articulo a, Etiqueta e " +
+                                                    "WHERE e.etiqueta = :etiqueta AND e.articulo = a " +
+                                                    "ORDER BY a.fecha DESC", Articulo.class);
+        query.setParameter("etiqueta",etiqueta);
+
+        hasMore = query.getResultList().size() > offset + pageSize;
 
         query.setFirstResult(offset);
         query.setMaxResults(pageSize);

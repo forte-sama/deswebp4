@@ -35,8 +35,14 @@
                             </div>
                             <div class="col col-md-4">
                                 <#list articulo.etiquetas() as etiqueta>
-                                <span class="label label-danger">${etiqueta.getEtiqueta()}</span>
+                                <a class="label label-danger" href="/tag/${etiqueta.getEtiqueta()}/page/1">
+                                    ${etiqueta.getEtiqueta()}
+                                </a> &nbsp;
                                 </#list>
+                                <hr />
+                                <#if num_likes??>
+                                <p>Cantidad de likes: <strong>${num_likes}</strong></p>
+                                </#if>
                                 <hr />
                                 <#if loggedIn?? && loggedIn == true>
                                 <div class="alert alert-warning">
@@ -46,6 +52,12 @@
                                             <div class="form-group col-md-12">
                                                 <label for="comentario">Nuevo Comentario</label>
                                                 <input type="text" class="form-control" name="comentario" placeholder="Me gusto este articulo">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-12">
+                                                <strong>Me gusto el articulo </strong>
+                                                <input type="checkbox" class="form-control" name="voto" value="bueno">
                                             </div>
                                         </div>
                                         <div class="row">
@@ -67,7 +79,19 @@
                                 <h4>Comentarios</h4>
                                 <#list comentarios as comentario>
                                 <div class="panel panel-default">
-                                    <div class="panel-heading">${comentario.getAutor().getUsername()} dijo:</div>
+                                    <div class="panel-heading">
+                                        <#if comentario.isVoto() == true>
+                                        <span class="label label-success">
+                                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                                        </span>
+                                        <#else>
+                                            <span class="label label-danger">
+                                            <span class="glyphicon glyphicon-thumbs-down"></span>
+                                        </span>
+                                        </#if>
+                                        &nbsp;
+                                        ${comentario.getAutor().getUsername()} dijo:
+                                    </div>
                                     <div class="panel-body">
                                     ${comentario.getComentario()}
                                     </div>

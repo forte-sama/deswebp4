@@ -64,4 +64,24 @@ public class GestorComentarios extends EntityManagerCRUD<Comentario> {
 
         return resp;
     }
+
+    public Long likeCount(Articulo article) {
+        Long resp = (long)0;
+
+        EntityManager em = getEntityManager();
+
+        //do the thing
+        try {
+            //do the exact thing
+            TypedQuery<Long> query = em.createQuery("SELECT COUNT(c) FROM Comentario c WHERE c.articulo = :articulo AND c.voto = true", Long.class);
+
+            resp = query.setParameter("articulo",article).getSingleResult();
+        } catch (Exception ex) {
+            throw  ex;
+        } finally {
+            em.close();
+        }
+
+        return resp;
+    }
 }
