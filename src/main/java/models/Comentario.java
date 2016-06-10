@@ -1,19 +1,32 @@
 package models;
 
+import org.omg.CORBA.COMM_FAILURE;
+
+import javax.persistence.*;
+
 /**
  * Created by forte on 31/05/16.
  */
+@Entity
 public class Comentario {
-    private long id;
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(length = 2000)
     private String comentario;
-    private String autorId;
-    private long articuloId;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Usuario autor;
+    @OneToOne(fetch = FetchType.LAZY)
+    private Articulo articulo;
+    private boolean voto;
 
-    public Comentario(long id, String comentario, String autorId, long articuloId) {
+    public Comentario() { }
+
+    public Comentario(long id, String comentario, Usuario autor, Articulo articulo) {
         this.id = id;
         this.comentario = comentario;
-        this.autorId = autorId;
-        this.articuloId = articuloId;
+        this.autor = autor;
+        this.articulo = articulo;
     }
 
     public long getId() {
@@ -32,19 +45,27 @@ public class Comentario {
         this.comentario = comentario;
     }
 
-    public String getAutorId() {
-        return autorId;
+    public Usuario getAutor() {
+        return autor;
     }
 
-    public void setAutorId(String autorId) {
-        this.autorId = autorId;
+    public void setAutor(Usuario autorId) {
+        this.autor = autorId;
     }
 
-    public long getArticuloId() {
-        return articuloId;
+    public Articulo getArticulo() {
+        return articulo;
     }
 
-    public void setArticuloId(long articuloId) {
-        this.articuloId = articuloId;
+    public void setArticulo(Articulo articulo) {
+        this.articulo = articulo;
+    }
+
+    public boolean isVoto() {
+        return voto;
+    }
+
+    public void setVoto(boolean voto) {
+        this.voto = voto;
     }
 }

@@ -1,27 +1,36 @@
 package models;
 
-import freemarker.template.SimpleDate;
-import wrappers.GestorEtiquetas;
+import wrappers.db.GestorEtiquetas;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by forte on 31/05/16.
  */
-public class Articulo {
-    private long id;
+@Entity
+public class Articulo implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(length = 500)
     private String titulo;
+    @Column(length = 10000)
     private String cuerpo;
-    private String autorId;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Usuario autor;
     private Date fecha;
 
-    public Articulo(long id, String titulo, String cuerpo, String autor, Date fecha) {
+    public Articulo() { }
+
+    public Articulo(long id, String titulo, String cuerpo, Usuario autor, Date fecha) {
         this.id = id;
         this.titulo = titulo;
         this.cuerpo = cuerpo;
-        this.autorId = autor;
+        this.autor = autor;
         this.fecha = fecha;
     }
 
@@ -49,19 +58,25 @@ public class Articulo {
         this.cuerpo = cuerpo;
     }
 
-    public String getAutorId() {
-        return this.autorId;
+    public Usuario getAutor() {
+        return this.autor;
     }
 
-    public String getFecha() {
+    public void setAutor(Usuario autor) {
+        this.autor = autor;
+    }
+
+    public Date getFecha() { return this.fecha; }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getFechaFormateada() {
         String format = "EEE, d MMM yyyy";
         SimpleDateFormat formatter = new SimpleDateFormat(format);
 
         return formatter.format(this.fecha);
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
     }
 
     public String preview() {
@@ -70,7 +85,11 @@ public class Articulo {
         return this.getCuerpo().substring(0,length >= 70 ? 69 : length) + "...";
     }
 
-    public Set<String> etiquetas() {
-        return GestorEtiquetas.cargarListaEtiquetas(this.getId());
+    public List<Etiqueta> etiquetas() {
+        return GestorEtiquetas.getInstance().findByArticle(this);
+    }
+
+    public boolean limpiarEtiquetas() {
+        return GestorEtiquetas.getInstance().eliminarByArticle(this);
     }
 }

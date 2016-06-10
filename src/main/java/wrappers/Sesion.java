@@ -111,10 +111,10 @@ public class Sesion {
         if(usr_type != null && username_actual != null && recurso != null) {
             //recurso actual (articulo, comentario) pertenece a usuario en sesion actual
             if(recurso instanceof Articulo) {
-                exito = ((Articulo) recurso).getAutorId() == username_actual;
+                exito = ((Articulo) recurso).getAutor().getUsername() == username_actual;
             }
             else if(recurso instanceof Comentario) {
-                exito = ((Comentario) recurso).getAutorId() == username_actual;
+                exito = ((Comentario) recurso).getAutor().getUsername() == username_actual;
             }
             else if(recurso instanceof Usuario){
                 exito = ((Usuario) recurso).getUsername() == username_actual;

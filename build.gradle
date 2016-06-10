@@ -12,8 +12,11 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'com.sparkjava', name: 'spark-core', version: '2.3'
+    compile group: 'com.sparkjava', name: 'spark-debug-tools', version: '0.5'
     compile group: 'com.sparkjava', name: 'spark-template-freemarker', version: '2.3'
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.23'
     compile group: 'com.h2database', name: 'h2', version: '1.4.191'
-    compile group: 'com.sparkjava', name: 'spark-debug-tools', version: '0.5'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.1.0.Final'
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.1.0.Final'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.6.2'
 }

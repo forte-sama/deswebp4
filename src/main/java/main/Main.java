@@ -2,11 +2,15 @@ package main;
 
 import freemarker.template.Configuration;
 import models.Articulo;
+import models.Comentario;
+import models.Etiqueta;
 import models.Usuario;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 import wrappers.*;
+import wrappers.db.*;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -25,20 +29,116 @@ public class Main {
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(Main.class, "/templates");
 
-        //probar estado de la base de datos
-        DB.test();
-
         //aplicar filtros
         Filtros.iniciarFiltros();
 
+//        //prueba orm usuarios
+//        Usuario us = new Usuario();
+//        us.setUsername("xxy");
+//        us.setPassword("12345123451234512345123451234512345123451234512345");
+//        us.setNombre("PRUEBIN");
+//        us.setAdministrador(false);
+//        us.setAutor(true);
+//        GestorUsuarios.getInstance().editar(us);
+
+//        //prueba orm articulos
+//        Articulo ar = new Articulo();
+//        ar.setTitulo("si si si ahora prueba ORM si si si");
+//        ar.setCuerpo("Aqui tamo en prueba.");
+//        ar.setAutor(us);
+//        ar.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+//        GestorArticulos.getInstance().editar(ar);
+
+//        //prueba orm comentarios
+//        Comentario c1 = new Comentario();
+//        c1.setComentario("c1");
+//        c1.setAutor(us);
+//        c1.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
+//        GestorComentarios.getInstance().editar(c1);
+//
+//        Comentario c2 = new Comentario();
+//        c2.setComentario("c2");
+//        c2.setAutor(us);
+//        c2.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("1")));
+//        GestorComentarios.getInstance().editar(c2);
+//
+//        Comentario c3 = new Comentario();
+//        c3.setComentario("c3");
+//        c3.setAutor(us);
+//        c3.setArticulo(GestorArticulos.getInstance().find(Long.parseLong("2")));
+//        GestorComentarios.getInstance().editar(c3);
+
+        System.out.println();
         //Rutas
         get("/", (request, response) -> {
+            response.redirect("/page/1");
+
+            return "";
+        });
+
+        get("/page/:pageNumber", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","index");
             data.put("loggedIn",Sesion.isLoggedIn(request));
-            data.put("articulos",GestorArticulos.getArticulos());
             boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
             data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            try {
+                int page = Integer.parseInt(request.params("pageNumber"));
+
+                page = Math.max(1,page);
+
+                data.put("articulos",GestorArticulos.getInstance().find_page(page));
+
+                if(GestorArticulos.getInstance().hasMoreArticles()) {
+                    data.put("proxima_pagina", "" + (page + 1));
+                }
+                if(page > 1) {
+                    data.put("anterior_pagina","" + (page - 1));
+                }
+
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
+            return new ModelAndView(data,"index.ftl");
+        }, new FreeMarkerEngine(configuration));
+
+
+        get("/tag/:etiqueta/",(request, response) -> {
+            String tag = request.params("etiqueta");
+            response.redirect("/tag/" + tag + "/page/1");
+
+            return "";
+        });
+
+        get("/tag/:etiqueta/page/:pageNumber", (request, response) -> {
+            HashMap<String,Object> data = new HashMap<>();
+            data.put("action","index");
+            data.put("loggedIn",Sesion.isLoggedIn(request));
+            boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
+
+            try {
+                int page = Integer.parseInt(request.params("pageNumber"));
+                page = Math.max(1,page);
+
+                String tag = request.params("etiqueta");
+
+                data.put("articulos",GestorArticulos.getInstance().find_by_tag(page,tag));
+
+                if(GestorArticulos.getInstance().hasMoreArticles()) {
+                    data.put("proxima_pagina", "" + (page + 1));
+                }
+                if(page > 1) {
+                    data.put("anterior_pagina","" + (page - 1));
+                }
+
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 
             return new ModelAndView(data,"index.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -52,7 +152,7 @@ public class Main {
             data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             //obtener los usuarios
-            data.put("usuarios", GestorUsuarios.getUsuarios());
+            data.put("usuarios", GestorUsuarios.getInstance().findAll());
 
             return new ModelAndView(data,"user_list.ftl");
         }, new FreeMarkerEngine(configuration));
@@ -60,11 +160,13 @@ public class Main {
         get("/admin/user/delete/:username",(request, response) -> {
             String username = request.params("username");
 
-            Usuario target = GestorUsuarios.getUsuario(username);
+            Usuario target = GestorUsuarios.getInstance().find(username);
 
             if(target != null) {
                 //borrar
-                GestorUsuarios.deleteUsuario(username);
+                if(GestorUsuarios.getInstance().eliminar(target)) {
+                    target = null;
+                }
             }
             //redireccionar
             response.redirect("/admin/user/list");
@@ -80,7 +182,7 @@ public class Main {
             data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.params("username");
-            Usuario target = GestorUsuarios.getUsuario(username.trim());
+            Usuario target = GestorUsuarios.getInstance().find(username);
 
             if(target == null) {
                 //redireccionar por error
@@ -115,7 +217,7 @@ public class Main {
             data.put("isAutor",Sesion.getTipoUsuarioActivo(request) == "autor" || esAdmin);
 
             String username = request.queryParams("username");
-            Usuario target = GestorUsuarios.getUsuario(username.trim());
+            Usuario target = GestorUsuarios.getInstance().find(username.trim());
 
             if(target == null) {
                 //redireccionar por error
@@ -131,7 +233,7 @@ public class Main {
                 //actulizar usuario
                 target = new Usuario(username,password,nombre,esAdministrador,esAutor);
 
-                if(GestorUsuarios.saveUsuario(target,false)) {
+                if(GestorUsuarios.getInstance().editar(target)) {
                     //redireccionar
                     response.redirect("/admin/user/list");
                 }
@@ -180,12 +282,25 @@ public class Main {
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-            Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-
             //Crear articulo en el gestor
-            boolean exito = GestorArticulos.newArticulo(Sesion.getUsuarioActivo(request),titulo,cuerpo,etiquetas);
+            Articulo nuevo = new Articulo();
+            nuevo.setTitulo(titulo);
+            nuevo.setCuerpo(cuerpo);
+            nuevo.setAutor(GestorUsuarios.getInstance().find(Sesion.getUsuarioActivo(request)));
+            nuevo.setFecha(new java.sql.Date(Calendar.getInstance().getTimeInMillis()));
+            boolean exito = GestorArticulos.getInstance().crear(nuevo);
 
             if(exito) {
+                //si se creo el articulo, crear las etiquetas
+                Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
+                for(String str : etiquetas) {
+                    Etiqueta e = new Etiqueta();
+                    e.setEtiqueta(str);
+                    e.setArticulo(nuevo);
+
+                    GestorEtiquetas.getInstance().crear(e);
+                }
+
                 //redireccionar a vista con mis articulos
                 response.redirect("/");
             }
@@ -213,7 +328,7 @@ public class Main {
 
             try {
                 Long long_id = Long.parseLong(raw_id);
-                articulo = GestorArticulos.getArticulo(long_id);
+                articulo = GestorArticulos.getInstance().find(long_id);
             } catch(NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -222,7 +337,7 @@ public class Main {
                 data.put("id",articulo.getId());
                 data.put("cuerpo",articulo.getCuerpo());
                 data.put("titulo",articulo.getTitulo());
-                data.put("etiquetas",GestorEtiquetas.cargarEtiquetas(articulo.getId()));
+                data.put("etiquetas",GestorEtiquetas.joinListEtiquetdas(articulo.etiquetas()));
             }
             else {
                 response.redirect("/");
@@ -243,17 +358,20 @@ public class Main {
             long long_id = -1;
             boolean exito = true;
 
-            String autor  = Sesion.getUsuarioActivo(request);
             String titulo = request.queryParams("titulo");
             String cuerpo = request.queryParams("cuerpo");
             String raw_etiquetas = request.queryParams("etiquetas");
 
-            Set<String> etiquetas = GestorEtiquetas.parsearEtiquetas(raw_etiquetas);
-
             try {
                 long_id = Long.parseLong(raw_id.trim());
 
-                exito = GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
+                Articulo ar = GestorArticulos.getInstance().find(long_id);
+                ar.setTitulo(titulo);
+                ar.setCuerpo(cuerpo);
+//                etiquetas
+//                exito = _GestorArticulos.editArticulo(long_id,autor,titulo,cuerpo,etiquetas);
+                exito = GestorArticulos.getInstance().editar(ar);
+                exito = exito && GestorEtiquetas.getInstance().crearEtiquetasByArticle(ar,raw_etiquetas);
             } catch (NumberFormatException e) {
                 //TODO CAMBIAR MENSAJE DE EXITO
                 e.printStackTrace();
@@ -266,7 +384,7 @@ public class Main {
                 data.put("id",long_id);
                 data.put("titulo",titulo);
                 data.put("cuerpo",cuerpo);
-                data.put("etiquetas",GestorEtiquetas.cargarEtiquetas(long_id));
+//                data.put("etiquetas",_GestorEtiquetas.cargarEtiquetas(long_id));
 
                 data.put("msg_type","error");
                 data.put("msg","Hubo un error con el formulario.");
@@ -281,10 +399,10 @@ public class Main {
             try {
                 long long_id = Long.parseLong(raw_id);
 
-                Articulo articulo = GestorArticulos.getArticulo(long_id);
+                Articulo articulo = GestorArticulos.getInstance().find(long_id);
 
                 if(articulo != null) {
-                    GestorArticulos.deleteArticulo(articulo.getId());
+                    GestorArticulos.getInstance().eliminar(articulo);
                 }
             } catch (NumberFormatException e) {
                 e.printStackTrace();
@@ -312,11 +430,15 @@ public class Main {
             try {
                 long long_id = Long.parseLong(raw_article_id);
 
-                Articulo articulo = GestorArticulos.getArticulo(long_id);
+                Articulo articulo = GestorArticulos.getInstance().find(long_id);
 
                 if(articulo != null) {
                     data.put("articulo", articulo);
-                    data.put("comentarios",GestorComentarios.getComentarios(articulo.getId()));
+                    data.put("comentarios",GestorComentarios.getInstance().findByArticle(articulo));
+
+
+                    data.put("num_likes",GestorComentarios.getInstance().likeCount(articulo) + "");
+
                     exito = true;
                 }
             } catch (NumberFormatException e) {
@@ -338,14 +460,23 @@ public class Main {
             }
 
             String username        = Sesion.getUsuarioActivo(request);
-            String comentario      = request.queryParams("comentario");
+            String cuerpo_com      = request.queryParams("comentario");
             String raw_articulo_id = request.queryParams("articulo_id");
+            String voto            = request.queryParams("voto");
 
             boolean exito = false;
 
             try {
                 long long_articulo_id = Long.parseLong(raw_articulo_id);
-                GestorComentarios.newComentario(username, comentario, long_articulo_id);
+
+                Comentario comentario = new Comentario();
+                comentario.setArticulo(GestorArticulos.getInstance().find(long_articulo_id));
+                comentario.setComentario(cuerpo_com);
+                comentario.setAutor(GestorUsuarios.getInstance().find(username));
+                boolean esVotoBueno = (voto != null && voto.contentEquals("bueno"));
+                comentario.setVoto(esVotoBueno);
+
+                GestorComentarios.getInstance().crear(comentario);
                 exito = true;
             } catch (NumberFormatException e) {
                 //TODO CAMBIAR MENSAJE DE EXCEPCION
@@ -363,31 +494,25 @@ public class Main {
         });
 
         get("/comment/delete/:article_id/:comment_id", (request, response) -> {
-            String articulo_id   = request.params("article_id");
+            String raw_articulo_id   = request.params("article_id");
 
-            boolean exito = false;
-
-            try {
-                long long_articulo   = Long.parseLong(articulo_id);
-
-                Articulo articulo = GestorArticulos.getArticulo(long_articulo);
-
-                exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
-
-            } catch (NumberFormatException e) {
-                //TODO CAMBIAR MENSAJE DE EXCEPCION
-                exito = false;
-                e.printStackTrace();
-            }
+            long articulo_id = Long.parseLong(raw_articulo_id);
+            Articulo ar = GestorArticulos.getInstance().find(articulo_id);
 
             boolean esAdministrador = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
+            boolean esAutor = false;
+            if(ar != null) {
+                esAutor = esAutor && ar.getAutor().getUsername() == Sesion.getUsuarioActivo(request);
+            }
 
-            if(exito || esAdministrador) {
+            if(esAutor || esAdministrador) {
                 String comentario_id = request.params("comment_id");
 
                 try {
                     long long_comentario_id = Long.parseLong(comentario_id);
-                    GestorComentarios.deleteComentario(long_comentario_id);
+
+                    Comentario comentario = GestorComentarios.getInstance().find(long_comentario_id);
+                    GestorComentarios.getInstance().eliminar(comentario);
                 } catch (NumberFormatException e) {
                     //TODO CAMBIAR MENSAJE DE EXCEPCION
                     e.printStackTrace();
@@ -400,6 +525,14 @@ public class Main {
         });
 
 
+        get("/logout",(request, response) -> {
+            Sesion.cerrar(request);
+
+            response.redirect("/");
+
+            return "";
+        });
+
         get("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
             data.put("action","login");
@@ -409,14 +542,6 @@ public class Main {
 
             return new ModelAndView(data,"login.ftl");
         }, new FreeMarkerEngine(configuration));
-
-        get("/logout",(request, response) -> {
-            Sesion.cerrar(request);
-
-            response.redirect("/");
-
-            return "";
-        });
 
         post("/login", (request, response) -> {
             HashMap<String,Object> data = new HashMap<>();
@@ -430,8 +555,8 @@ public class Main {
                 String username = request.queryParams("username");
                 String password = request.queryParams("password");
 
-                if(GestorUsuarios.credencialesValidas(username,password)) {
-                    Usuario user = GestorUsuarios.getUsuario(username);
+                if(GestorUsuarios.getInstance().credencialesValidas(username,password)) {
+                    Usuario user = GestorUsuarios.getInstance().find(username);
                     //iniciar sesion
                     Sesion.iniciar(request,user);
 
@@ -480,7 +605,7 @@ public class Main {
                 Usuario newUser = new Usuario(username,password,nombre,false,esAutor);
 
                 //persistir nueva instancia, en caso de ser valida
-                if(GestorUsuarios.saveUsuario(newUser,true)) {
+                if(GestorUsuarios.getInstance().crear(newUser)) {
                     //redireccionar con mensaje de exito
                     response.redirect("/");
                 }

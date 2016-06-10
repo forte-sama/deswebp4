@@ -1,13 +1,13 @@
 package wrappers;
 
 import models.Articulo;
-import models.Comentario;
 import models.Usuario;
 import spark.Response;
-import wrappers.*;
 
 import static spark.Spark.before;
 import spark.Request;
+import wrappers.db.GestorArticulos;
+import wrappers.db.GestorUsuarios;
 
 /**
  * Created by forte on 01/06/16.
@@ -44,10 +44,10 @@ public class Filtros {
                 response.redirect("/");
             }
         });
-        before("/article/edit/:article_id", (request, response) -> {
-            //validar por metodo GET el acceso editar el articulo con id=article_id
-            validarAccesoArticulo(request,response,"get");
-        });
+//        before("/article/edit/:article_id", (request, response) -> {
+//            //validar por metodo GET el acceso editar el articulo con id=article_id
+//            validarAccesoArticulo(request,response,"get");
+//        });
         before("/article/edit", (request, response) -> {
             //validar por metodo POST el acceso editar el articulo con id=article_id
             validarAccesoArticulo(request,response,"post");
@@ -59,7 +59,7 @@ public class Filtros {
             try {
                 long id = Long.parseLong(request.params("article_id"));
 
-                Articulo articulo = GestorArticulos.getArticulo(id);
+                Articulo articulo = GestorArticulos.getInstance().find(id);
 
                 //si el articulo con article_id es del usuario que ha iniciado sesion
                 boolean esElAutor = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,articulo);
@@ -91,9 +91,9 @@ public class Filtros {
             try {
                 long long_articulo   = Long.parseLong(articulo_id);
 
-                Articulo articulo = GestorArticulos.getArticulo(long_articulo);
+                Articulo articulo = GestorArticulos.getInstance().find(long_articulo);
 
-                exito = articulo.getAutorId() == Sesion.getUsuarioActivo(request);
+                exito = articulo.getAutor().getUsername() == Sesion.getUsuarioActivo(request);
 
             } catch (NumberFormatException e) {
                 //TODO CAMBIAR MENSAJE DE EXCEPCION
@@ -115,7 +115,7 @@ public class Filtros {
         try {
             long id = Long.parseLong(raw_id);
 
-            Articulo articulo = GestorArticulos.getArticulo(id);
+            Articulo articulo = GestorArticulos.getInstance().find(id);
 
             //si el articulo con article_id es del usuario que ha iniciado sesion
             exito = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,articulo);
@@ -133,7 +133,7 @@ public class Filtros {
 
         String username = metodo == "get" ? request.params("username") : request.queryParams("username");
 
-        Usuario user = GestorUsuarios.getUsuario(username);
+        Usuario user = GestorUsuarios.getInstance().find(username);
 
         boolean esAdmin = Sesion.accesoValido(AccessTypes.ADMIN_ONLY,request,null);
         boolean esUsuarioActivo = Sesion.accesoValido(AccessTypes.OWNER_ONLY,request,user);
