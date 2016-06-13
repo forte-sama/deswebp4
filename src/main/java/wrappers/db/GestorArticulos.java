@@ -92,10 +92,16 @@ public class GestorArticulos extends EntityManagerCRUD<Articulo> {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
 
-        TypedQuery<Articulo> query = em.createQuery("SELECT a " +
-                                                    "FROM Articulo a, Etiqueta e " +
-                                                    "WHERE e.etiqueta = :etiqueta AND e.articulo = a " +
-                                                    "ORDER BY a.fecha DESC", Articulo.class);
+//        TypedQuery<Articulo> query = em.createQuery("SELECT a " +
+//                "FROM Articulo a, Etiqueta e " +
+//                "WHERE e.etiqueta = :etiqueta AND e.articulo = a " +
+//                "ORDER BY a.fecha DESC", Articulo.class);
+
+        TypedQuery<Articulo> query = em.createQuery("SELECT e.articulo " +
+                                                    "FROM Etiqueta e " +
+                                                    "WHERE e.etiqueta = :etiqueta " +
+                                                    "ORDER BY e.articulo.fecha DESC", Articulo.class);
+
         query.setParameter("etiqueta",etiqueta);
 
         hasMore = query.getResultList().size() > offset + pageSize;
